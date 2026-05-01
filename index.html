@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Jordan & Lauren Health App</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0f0f11;--surface:#1a1a1f;--surface2:#23232a;--surface3:#2c2c35;--accent:#e8a23a;--accent2:#3ab8a2;--lauren:#e864a0;--text:#f0eff4;--text2:#9998a8;--text3:#5f5e6e;--border:#2c2c35;--radius:14px;--rsm:8px;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+#app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;position:relative;overflow:hidden;}
+
+/* PROFILE SWITCHER */
+.profile-sw{display:flex;padding:8px 14px;gap:8px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;}
+.profile-btn{flex:1;padding:7px;border-radius:var(--rsm);font-size:13px;font-weight:600;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.profile-btn.active-j{background:rgba(232,162,58,.15);border-color:rgba(232,162,58,.4);color:var(--accent);}
+.profile-btn.active-l{background:rgba(232,100,160,.15);border-color:rgba(232,100,160,.4);color:var(--lauren);}
+
+/* HEADER */
+.header{padding:12px 16px 8px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.header-day{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);line-height:1;}
+.header-date{font-size:12px;color:var(--text2);margin-top:2px;}
+.day-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.badge-work{background:rgba(232,162,58,.15);color:var(--accent);}
+.badge-off{background:rgba(58,184,162,.15);color:var(--accent2);}
+.badge-trans{background:rgba(232,72,72,.15);color:#e84848;}
+.badge-lauren{background:rgba(232,100,160,.15);color:var(--lauren);}
+
+/* TABS */
+.tabs-bar{display:flex;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex:1;padding:10px 4px;font-size:11px;font-weight:500;background:none;border:none;color:var(--text2);cursor:pointer;position:relative;white-space:nowrap;min-width:55px;font-family:'DM Sans',sans-serif;}
+.tab-btn.active{color:var(--accent);}
+.tab-btn.active.lauren-tab{color:var(--lauren);}
+.tab-btn.active::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;background:var(--accent);border-radius:2px 2px 0 0;}
+.tab-btn.active.lauren-tab::after{background:var(--lauren);}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:12px 12px 28px;-webkit-overflow-scrolling:touch;}
+.content::-webkit-scrollbar{display:none;}
+.sec-lbl{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin:16px 0 8px;}
+.sec-lbl:first-child{margin-top:0;}
+
+/* DAY NAV */
+.day-nav{display:flex;gap:5px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;}
+.day-nav::-webkit-scrollbar{display:none;}
+.day-pill{padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.day-pill.active{background:var(--accent);border-color:var(--accent);color:#000;}
+.day-pill.work-day{border-color:rgba(232,162,58,.3);}
+
+/* HERO */
+.hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+.hero-greet{font-size:12px;color:var(--text2);margin-bottom:3px;}
+.hero-title{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;line-height:1.2;}
+.hero-sub{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;}
+.stat-box{background:var(--surface2);border-radius:var(--rsm);padding:8px;text-align:center;}
+.stat-val{font-size:16px;font-weight:700;color:var(--accent);}
+.stat-lbl{font-size:11px;color:var(--text2);margin-top:2px;}
+.prog-row{display:flex;align-items:center;gap:7px;margin-top:8px;}
+.prog-lbl{font-size:12px;color:var(--text2);min-width:50px;}
+.prog-bg{flex:1;height:4px;background:var(--surface3);border-radius:3px;}
+.prog-bar{height:4px;border-radius:3px;}
+.prog-pct{font-size:11px;font-weight:600;min-width:30px;text-align:right;}
+
+/* WATER */
+.water-box{background:var(--surface);border:1px solid rgba(58,184,162,.25);border-radius:var(--radius);padding:12px;margin-bottom:12px;}
+.water-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.water-lbl{font-size:13px;font-weight:600;color:var(--accent2);}
+.water-cnt{font-size:12px;color:var(--text2);}
+.water-cnt span{color:var(--accent2);font-weight:700;}
+.water-btns{display:flex;flex-wrap:wrap;gap:6px;}
+.water-btn{width:34px;height:34px;border-radius:7px;border:1.5px solid rgba(58,184,162,.3);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text3);}
+.water-btn.filled{background:rgba(58,184,162,.2);border-color:var(--accent2);}
+.water-oz{font-size:11px;color:var(--text3);margin-top:6px;}
+
+/* MEAL CARDS */
+.meal-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:9px;overflow:hidden;}
+.meal-card.eaten{border-color:rgba(58,184,162,.4);background:rgba(58,184,162,.03);}
+.meal-hdr{display:flex;align-items:center;gap:9px;padding:11px 11px 7px;}
+.meal-em{font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--surface2);border-radius:8px;flex-shrink:0;position:relative;}
+.eaten-ck{position:absolute;top:-4px;right:-4px;width:15px;height:15px;background:var(--accent2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;color:#000;}
+.meal-info{flex:1;min-width:0;}
+.meal-type{font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;}
+.meal-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3;margin-top:1px;}
+.meal-macros{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;}
+.macro{font-size:10px;color:var(--text2);background:var(--surface2);padding:2px 5px;border-radius:20px;}
+.macro span{color:var(--text);font-weight:500;}
+.meal-actions{display:flex;gap:6px;padding:0 11px 11px;flex-wrap:wrap;}
+.btn-sm{font-size:11px;font-weight:500;padding:5px 10px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-sm.accent{background:rgba(232,162,58,.12);border-color:rgba(232,162,58,.3);color:var(--accent);}
+.btn-sm.teal{background:rgba(58,184,162,.1);border-color:rgba(58,184,162,.3);color:var(--accent2);}
+.btn-sm.ate{background:rgba(58,184,162,.15);border-color:rgba(58,184,162,.5);color:var(--accent2);}
+.btn-sm.uneaten{background:var(--surface2);border-color:var(--border);color:var(--text3);}
+.port-row{display:flex;align-items:center;gap:7px;padding:0 11px 9px;}
+.port-lbl{font-size:12px;color:var(--text2);flex:1;}
+.port-ctrl{display:flex;align-items:center;gap:6px;}
+.port-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;}
+.port-val{font-size:13px;font-weight:600;color:var(--accent);min-width:24px;text-align:center;}
+.port-vis{padding:8px 11px 11px;border-top:1px solid var(--border);}
+.port-vis-title{font-size:10px;color:var(--text3);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;}
+.port-item{display:flex;align-items:baseline;gap:6px;font-size:11px;padding:4px 0;border-bottom:1px solid var(--border);}
+.port-item:last-child{border-bottom:none;}
+.p-icon{font-size:13px;width:17px;flex-shrink:0;}
+.p-g{color:var(--text);font-weight:500;min-width:60px;}
+.p-v{color:var(--text2);}
+
+/* WORKOUT CARDS */
+.wk-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;}
+.wk-card.done{border-color:rgba(232,162,58,.4);}
+.wk-head{padding:12px;}
+.wk-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.wk-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+.wk-badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(232,162,58,.15);color:var(--accent);}
+.wk-badge.done{background:rgba(58,184,162,.15);color:var(--accent2);}
+.wk-meta{display:flex;gap:6px;flex-wrap:wrap;}
+.wk-chip{font-size:11px;color:var(--text2);background:var(--surface2);padding:3px 8px;border-radius:20px;}
+.wu-block{margin:0 12px 10px;background:rgba(58,184,162,.06);border:1px solid rgba(58,184,162,.15);border-radius:var(--rsm);padding:10px;}
+.wu-title{font-size:10px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.wu-item{font-size:11px;color:var(--text2);padding:2px 0;}
+.ex-list{padding:0 12px 10px;}
+.ex-card{background:var(--surface2);border-radius:var(--rsm);padding:10px;margin-bottom:6px;}
+.ex-card:last-child{margin-bottom:0;}
+.ex-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
+.ex-nm{font-size:13px;font-weight:500;color:var(--text);flex:1;}
+.ex-sets{font-size:10px;font-weight:600;color:var(--accent);background:rgba(232,162,58,.12);padding:2px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.ex-note{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5;}
+.ex-safe{font-size:10px;color:var(--accent2);margin-top:3px;background:rgba(58,184,162,.08);padding:2px 6px;border-radius:4px;display:inline-block;}
+.ex-rest{font-size:10px;color:var(--text3);margin-top:4px;padding-top:4px;border-top:1px solid var(--border);}
+.fin-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface2);margin:0 12px 6px;border-radius:var(--rsm);}
+.fin-lbl{font-size:11px;color:var(--text2);}
+.fin-val{font-size:11px;font-weight:600;color:var(--accent);}
+.wk-done-btn{margin:0 12px 12px;padding:9px;border-radius:var(--rsm);font-size:12px;font-weight:600;cursor:pointer;border:none;width:calc(100% - 24px);font-family:'DM Sans',sans-serif;}
+.wk-done-btn.pending{background:rgba(232,162,58,.15);color:var(--accent);}
+.wk-done-btn.completed{background:rgba(58,184,162,.15);color:var(--accent2);}
+.rest-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
+.goal-prompt{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;}
+.gp-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px;}
+.gp-sub{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* SHOPPING */
+.shop-week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;}
+.shop-week-lbl{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.shop-nav-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rsm);color:var(--text2);padding:4px 10px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.shop-prog{display:flex;align-items:center;gap:7px;margin-bottom:12px;}
+.shop-sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;}
+.shop-sec-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;cursor:pointer;}
+.shop-sec-title{font-size:12px;font-weight:600;color:var(--text);}
+.shop-count{font-size:10px;color:var(--text3);background:var(--surface2);padding:2px 6px;border-radius:20px;}
+.shop-items-list{padding:0 12px 8px;}
+.shop-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.shop-item:last-child{border-bottom:none;}
+.shop-cb{width:18px;height:18px;min-width:18px;border-radius:4px;border:1.5px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;margin-top:1px;}
+.shop-cb.checked{background:var(--accent2);border-color:var(--accent2);}
+.shop-item-name{font-size:12px;color:var(--text);flex:1;line-height:1.4;}
+.shop-item-name.checked{color:var(--text3);text-decoration:line-through;}
+.shop-note{font-size:10px;color:var(--text3);font-style:italic;margin-top:2px;}
+.shop-amt{font-size:11px;color:var(--text2);text-align:right;min-width:70px;}
+.shop-amt.checked{color:var(--text3);}
+.shop-reset{margin-top:8px;padding:9px;border-radius:var(--rsm);font-size:11px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;}
+
+/* LABS */
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:24px 16px;text-align:center;cursor:pointer;margin-bottom:12px;}
+.analyzing{display:flex;align-items:center;gap:8px;background:rgba(232,162,58,.1);border:1px solid rgba(232,162,58,.2);border-radius:var(--rsm);padding:9px 11px;font-size:13px;color:var(--accent);margin-bottom:10px;}
+.labs-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
+.labs-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:3px;}
+.labs-date{font-size:12px;color:var(--text2);margin-bottom:10px;}
+.lab-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
+.lab-row:last-child{border-bottom:none;}
+.lab-name{font-size:12px;color:var(--text2);}
+.lab-range{font-size:10px;color:var(--text3);margin-top:1px;}
+.lab-val{font-size:12px;font-weight:600;}
+.insight-card{background:rgba(58,184,162,.06);border:1px solid rgba(58,184,162,.2);border-radius:var(--rsm);padding:10px;margin-bottom:7px;}
+.insight-title{font-size:11px;font-weight:600;color:var(--accent2);margin-bottom:3px;}
+.insight-text{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* DRAWER */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.drawer{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(102%);width:100%;max-width:480px;background:var(--surface);border-radius:20px 20px 0 0;z-index:101;transition:transform .32s cubic-bezier(.32,.72,0,1);max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.drawer.open{transform:translateX(-50%) translateY(0);}
+.drawer-handle{width:36px;height:4px;background:var(--surface3);border-radius:2px;margin:11px auto 0;}
+.drawer-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;padding:13px 17px 3px;}
+.drawer-sub{font-size:12px;color:var(--text2);padding:0 17px 11px;}
+.swap-item{display:flex;align-items:center;gap:9px;padding:10px 17px;border-bottom:1px solid var(--border);cursor:pointer;}
+.swap-item:last-child{border-bottom:none;}
+.swap-em-box{font-size:19px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--surface2);border-radius:7px;flex-shrink:0;}
+.swap-info{flex:1;}
+.swap-name{font-size:12px;font-weight:500;color:var(--text);}
+.swap-macros{font-size:10px;color:var(--text2);margin-top:2px;}
+.use-btn{font-size:11px;padding:4px 10px;border-radius:20px;background:rgba(232,162,58,.12);border:1px solid rgba(232,162,58,.3);color:var(--accent);cursor:pointer;flex-shrink:0;font-family:'DM Sans',sans-serif;}
+.recipe-body{padding:0 17px 28px;}
+.rec-sec{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px;}
+.ing-row{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border);}
+.ing-row:last-child{border-bottom:none;}
+.ing-nm{color:var(--text2);}
+.ing-amt{color:var(--text);font-weight:500;}
+.step-row{display:flex;gap:8px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:8px;}
+.step-num{width:19px;height:19px;min-width:19px;border-radius:50%;background:rgba(232,162,58,.15);color:var(--accent);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;}
+.batch-tip{background:rgba(58,184,162,.08);border:1px solid rgba(58,184,162,.2);border-radius:var(--rsm);padding:9px;font-size:11px;color:var(--accent2);margin-top:9px;line-height:1.5;}
+.rec-link{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--surface2);border-radius:var(--rsm);font-size:12px;color:var(--accent2);text-decoration:none;margin-top:8px;border:1px solid var(--border);}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="profile-sw">
+    <button class="profile-btn active-j" id="btnJ" onclick="switchProfile('J');document.getElementById('btnJ').className='profile-btn active-j';document.getElementById('btnL').className='profile-btn';">Jordan</button>
+    <button class="profile-btn" id="btnL" onclick="switchProfile('L');document.getElementById('btnL').className='profile-btn active-l';document.getElementById('btnJ').className='profile-btn';">Lauren</button>
+  </div>
+  <div class="header">
+    <div class="header-top">
+      <div><div class="header-day" id="hDay">Monday</div><div class="header-date" id="hDate"></div></div>
+      <div class="day-badge" id="hBadge"></div>
+    </div>
+  </div>
+  <div class="tabs-bar" id="tabsBar">
+    <button class="tab-btn active" onclick="switchTab('today',this)">Today</button>
+    <button class="tab-btn" onclick="switchTab('meals',this)">Meals</button>
+    <button class="tab-btn" onclick="switchTab('workouts',this)">Workouts</button>
+    <button class="tab-btn" onclick="switchTab('shopping',this)">Shopping</button>
+    <button class="tab-btn" onclick="switchTab('labs',this)">Labs</button>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer"><div class="drawer-handle"></div><div id="drawerInner"></div></div>
+<input type="file" id="pdfInput_J" style="display:none" accept=".pdf" onchange="handleLabPDF('J',event)">
+<input type="file" id="pdfInput_L" style="display:none" accept=".pdf" onchange="handleLabPDF('L',event)">
+
+<script>
+// ── JORDAN MEALS ─────────────────────────────────────────────────────────────
+var J_MEALS = {
+  breakfast:[
+    {id:'jb1',emoji:'🥣',name:'Overnight Oats Power Bowl',cal:450,pro:35,carb:48,fat:10,fib:12,
+     portions:[{i:'🥣',n:'Rolled oats',g:'80g',v:'About 1 cup, size of your fist'},{i:'🫐',n:'Mixed berries',g:'80g',v:'Half cup, a loose handful'},{i:'🥛',n:'Almond milk',g:'240ml',v:'1 full cup'},{i:'💪',n:'Protein powder',g:'30g',v:'1 heaping scoop'}],
+     recipe:{ings:[['Rolled oats','80g'],['Chia seeds','1 tbsp'],['Unsweetened almond milk','1 cup'],['Vanilla protein powder','1 scoop'],['Blueberries','half cup'],['Cinnamon','half tsp'],['Almond butter','1 tbsp']],steps:['Mix oats, chia seeds, and protein powder in a mason jar.','Pour almond milk over and stir well.','Refrigerate overnight, minimum 4 hours.','Top with berries and almond butter before eating.','Prep 5 jars every Sunday for the work week.'],batch:'Makes 5 jars in one Sunday prep. Stays fresh 5 days in fridge.',link:'https://www.budgetbytes.com/overnight-oats/'}},
+    {id:'jb2',emoji:'🍳',name:'High-Protein Egg Scramble',cal:420,pro:40,carb:12,fat:22,fib:3,
+     portions:[{i:'🥚',n:'Whole eggs',g:'3 large',v:'3 eggs, stacked size of your fist'},{i:'🥚',n:'Egg whites',g:'half cup',v:'Fills half a small glass'},{i:'🧀',n:'Feta cheese',g:'3 tbsp',v:'Thumbnail-sized crumbles'},{i:'🥬',n:'Baby spinach',g:'2 handfuls',v:'Wilts down to almost nothing'}],
+     recipe:{ings:[['Large eggs','3'],['Egg whites','half cup'],['Baby spinach','2 handfuls'],['Feta cheese','3 tbsp crumbled'],['Cherry tomatoes','half cup halved'],['Olive oil','1 tsp'],['Garlic powder','quarter tsp']],steps:['Whisk eggs and egg whites together.','Heat olive oil in non-stick pan over medium heat.','Add tomatoes, cook 2 min. Add spinach, stir until wilted.','Pour egg mix over vegetables. Fold gently until just set.','Top with feta.'],batch:'Hard-boil 8 eggs on Sunday as a backup.',link:'https://www.eatingwell.com/recipe/252390/scrambled-eggs-with-spinach-tomatoes/'}},
+    {id:'jb3',emoji:'🍦',name:'Greek Yogurt Protein Bowl',cal:380,pro:42,carb:30,fat:8,fib:5,
+     portions:[{i:'🥛',n:'0% Greek yogurt',g:'1 cup',v:'Size of a baseball'},{i:'💪',n:'Protein powder',g:'half scoop',v:'Stirred in until smooth'},{i:'🫐',n:'Blueberries',g:'one-third cup',v:'A small handful'},{i:'🌰',n:'Walnuts',g:'8 halves',v:'Fits flat in your palm'}],
+     recipe:{ings:[['Plain 0% Greek yogurt','1 cup'],['Vanilla protein powder','half scoop'],['Blueberries','one-third cup'],['Walnuts chopped','8 halves'],['Ground flaxseed','1 tbsp'],['Cinnamon','pinch']],steps:['Stir protein powder into yogurt until smooth.','Top with berries, walnuts, and flaxseed.','Sprinkle cinnamon. Eat immediately.'],batch:'Pre-portion yogurt into 5 containers. Pack toppings separately.',link:'https://www.wellplated.com/greek-yogurt-bowl/'}},
+    {id:'jb4',emoji:'🧇',name:'Cottage Cheese Pancakes',cal:400,pro:38,carb:28,fat:12,fib:3,
+     portions:[{i:'🥛',n:'Cottage cheese',g:'three-quarter cup',v:'Generous fist-sized scoop'},{i:'🥚',n:'Eggs',g:'3 large',v:'3 eggs'},{i:'🌾',n:'Oat flour',g:'one-third cup',v:'Slightly less than a cupped palm'}],
+     recipe:{ings:[['Low-fat cottage cheese','3/4 cup'],['Large eggs','3'],['Oat flour','1/3 cup'],['Cinnamon','half tsp'],['Vanilla extract','half tsp'],['Salt','pinch']],steps:['Blend all ingredients until smooth.','Heat non-stick pan over medium. Light cooking spray.','Pour quarter-cup batter per pancake. Cook 2-3 min per side.','Top with berries.'],batch:'Batter keeps 2 days refrigerated.',link:'https://www.budgetbytes.com/cottage-cheese-pancakes/'}},
+    {id:'jb5',emoji:'🫙',name:'Savory Cottage Cheese Bowl',cal:320,pro:36,carb:14,fat:10,fib:4,
+     portions:[{i:'🥛',n:'Cottage cheese',g:'1 cup',v:'Full fist-sized scoop'},{i:'🍅',n:'Cherry tomatoes',g:'half cup',v:'About 8-10 tomatoes'},{i:'🥒',n:'Cucumber sliced',g:'half cup',v:'About 6-8 round slices'},{i:'🫒',n:'Kalamata olives',g:'6-8 olives',v:'Small cluster in your palm'}],
+     recipe:{ings:[['Low-fat cottage cheese','1 cup'],['Cherry tomatoes halved','half cup'],['Cucumber sliced','half cup'],['Kalamata olives','6-8'],['Everything bagel seasoning','1 tsp'],['Olive oil drizzle','half tsp']],steps:['Spoon cottage cheese into a bowl.','Arrange tomatoes, cucumber, and olives on top.','Drizzle olive oil, sprinkle seasoning.','Eat immediately.'],batch:'No prep needed. Just portion cottage cheese ahead.',link:'https://www.eatingwell.com/recipe/cottage-cheese-snack/'}}
+  ],
+  lunch:[
+    {id:'jl1',emoji:'🍛',name:'Chicken Tikka Masala Bowl',cal:550,pro:48,carb:38,fat:16,fib:8,
+     portions:[{i:'🍗',n:'Cooked chicken thigh',g:'6 oz',v:'2 palm-sized pieces'},{i:'🌸',n:'Cauliflower rice',g:'3/4 cup',v:'Two loosely cupped hands'},{i:'🫘',n:'Chickpeas',g:'one-third cup',v:'Fills a shot glass'},{i:'🍅',n:'Tikka sauce',g:'3 tbsp',v:'Thin coating over chicken'}],
+     recipe:{ings:[['Boneless chicken thighs batch','2 lbs'],['Crushed tomatoes','1 can 14oz'],['Full-fat coconut milk','1 cup'],['Plain Greek yogurt','half cup'],['Garlic minced','4 cloves'],['Fresh ginger grated','1 tbsp'],['Tikka masala spice blend','3 tbsp'],['Frozen cauliflower rice','1 bag 12oz'],['Canned chickpeas drained','2 cans 15oz']],steps:['Marinate chicken in yogurt and 1 tbsp tikka spice, 30 min.','Sear chicken in batches until browned.','Saute garlic and ginger 1 min. Add remaining spice 30 sec.','Add tomatoes and coconut milk. Simmer 10 min.','Return chicken. Simmer 20 min. Stir in chickpeas.','Portion into 5 containers over cauliflower rice.'],batch:'Makes 5 portions. Freeze 3, refrigerate 2.',link:'https://www.budgetbytes.com/chicken-tikka-masala/'}},
+    {id:'jl2',emoji:'🌮',name:'Ground Turkey Taco Bowl',cal:580,pro:52,carb:42,fat:18,fib:12,
+     portions:[{i:'🦃',n:'Cooked ground turkey',g:'6 oz',v:'Palm-sized half inch thick'},{i:'🫘',n:'Black beans',g:'half cup',v:'Loosely cupped palm'},{i:'🍚',n:'Brown rice cooked',g:'half cup',v:'Slightly smaller than fist'}],
+     recipe:{ings:[['Lean ground turkey batch','2 lbs'],['Taco seasoning','3 tbsp'],['Black beans drained','2 cans 15oz'],['Brown rice dry','1.5 cups'],['Bell peppers sliced','3'],['Salsa no sugar added','to serve']],steps:['Cook brown rice.','Brown turkey, drain fat. Add seasoning and quarter-cup water, simmer 5 min.','Roast bell peppers at 400F for 20 min.','Layer rice, turkey, and beans into 5 containers.','Add salsa at serving time.'],batch:'Keeps 4 days refrigerated.',link:'https://www.budgetbytes.com/ground-turkey-taco-bowls/'}},
+    {id:'jl3',emoji:'🥗',name:'Mediterranean Lentil Bowl',cal:520,pro:32,carb:58,fat:14,fib:18,
+     portions:[{i:'🫘',n:'Cooked green lentils',g:'3/4 cup',v:'Fist plus one palm'},{i:'🧀',n:'Feta cheese',g:'4 tbsp',v:'Small handful of crumbles'},{i:'🥒',n:'Cucumber and tomato',g:'1 cup chopped',v:'About 1 cup loosely packed'}],
+     recipe:{ings:[['Green lentils dry','2 cups batch'],['Feta cheese','6 oz block'],['Cherry tomatoes','1 pint'],['Cucumber','2 medium'],['Kalamata olives','half cup'],['Olive oil','3 tbsp'],['Lemon juice','3 tbsp'],['Cumin','1 tsp'],['Smoked paprika','1 tsp']],steps:['Cook lentils in boiling salted water 20-25 min. Drain and cool.','Halve tomatoes, dice cucumber.','Whisk olive oil, lemon, cumin, paprika for dressing.','Toss lentils, vegetables, olives, and dressing.','Portion into 5 containers. Add feta at serving time.'],batch:'Lentil base keeps 5 days.',link:'https://cookieandkate.com/mediterranean-lentil-salad-recipe/'}},
+    {id:'jl4',emoji:'🥙',name:'Beef Lettuce Wraps Asian Style',cal:480,pro:44,carb:18,fat:26,fib:5,
+     portions:[{i:'🥩',n:'Cooked 80/20 ground beef',g:'5 oz',v:'Palm-sized, fat cooks off'},{i:'🥬',n:'Butter lettuce leaves',g:'3-4 large',v:'Each leaf like a cupped hand'},{i:'🥕',n:'Shredded carrot and cabbage',g:'half cup',v:'Loose handful of each'}],
+     recipe:{ings:[['Ground beef 80/20 batch','2 lbs'],['Butter lettuce','1 head'],['Shredded carrot','1 cup'],['Green cabbage shredded','1 cup'],['Garlic minced','4 cloves'],['Fresh ginger grated','1 tbsp'],['Low-sodium soy sauce','3 tbsp'],['Sesame oil','1 tsp'],['Rice vinegar','1 tbsp'],['Green onions','4 stalks']],steps:['Brown beef over high heat. Drain ALL fat.','Add garlic and ginger. Cook 1 min.','Add soy sauce, sesame oil, rice vinegar. Stir 2 min.','Stir in green onions.','Serve in lettuce leaves topped with carrot and cabbage.'],batch:'Beef filling keeps 4 days.',link:'https://damndelicious.net/2019/01/11/ground-beef-lettuce-wraps/'}}
+  ],
+  dinner:[
+    {id:'jd1',emoji:'🍲',name:'Indian Spiced Beef Keema',cal:580,pro:48,carb:32,fat:24,fib:9,
+     portions:[{i:'🥩',n:'Cooked 80/20 ground beef',g:'5 oz',v:'Palm-sized half inch thick'},{i:'🫛',n:'Green peas',g:'one-third cup',v:'Fills your cupped palm'},{i:'🍚',n:'Cauliflower or brown rice',g:'half cup',v:'Your fist'}],
+     recipe:{ings:[['Ground beef 80/20 batch','2 lbs'],['Frozen green peas','1.5 cups'],['Crushed tomatoes','1 can 14oz'],['Large onions diced','2'],['Garlic minced','5 cloves'],['Fresh ginger grated','2 tbsp'],['Garam masala','2 tsp'],['Ground cumin','1 tsp'],['Turmeric','half tsp']],steps:['Saute onions in oil 8-10 min until golden brown.','Add garlic, ginger, all spices. Stir 1 minute.','Add beef, break up and brown. Drain ALL fat.','Add crushed tomatoes. Simmer 15 min.','Stir in peas, cook 5 more min.'],batch:'Freezes perfectly up to 3 months.',link:'https://www.seriouseats.com/keema-qeema-recipe'}},
+    {id:'jd2',emoji:'🌿',name:'Thai Basil Chicken Pad Krapow',cal:520,pro:48,carb:28,fat:18,fib:5,
+     portions:[{i:'🍗',n:'Ground chicken cooked',g:'6 oz',v:'Palm-sized portion'},{i:'🌿',n:'Sauce',g:'3 tbsp',v:'Coats everything in the pan'},{i:'🍚',n:'Jasmine rice cooked',g:'half cup',v:'Slightly less than a fist'}],
+     recipe:{ings:[['Ground chicken batch','2 lbs'],['Fresh Thai basil','1 large bunch'],['Fish sauce','3 tbsp'],['Oyster sauce','2 tbsp'],['Low-sodium soy sauce','2 tbsp'],['Garlic minced','6 cloves'],['Thai bird chilies adjust','3-5'],['Bell peppers diced','2'],['Jasmine rice dry','1.5 cups']],steps:['Cook rice and portion into 5 containers.','Heat oil in wok over very high heat.','Add garlic and chilies, stir 30 seconds.','Add chicken, cook on high breaking up until done.','Add peppers, stir-fry 2 more min.','Mix sauces and pour over. Toss. Fold in fresh basil.'],batch:'Best within 3 days. Do not freeze.',link:'https://hot-thai-kitchen.com/pad-kra-pao/'}},
+    {id:'jd3',emoji:'🫘',name:'Mexican Black Bean Chicken Stew',cal:560,pro:50,carb:44,fat:14,fib:14,
+     portions:[{i:'🍗',n:'Shredded chicken breast',g:'6 oz',v:'Fills 3/4 cup loosely packed'},{i:'🫘',n:'Black beans',g:'half cup',v:'Loosely cupped palm'},{i:'🥫',n:'Stew broth and tomato',g:'3/4 cup',v:'Fills the bowl halfway'}],
+     recipe:{ings:[['Chicken breasts batch','2.5 lbs'],['Black beans','2 cans 15oz'],['Diced tomatoes','2 cans 14oz'],['Low-sodium chicken broth','2 cups'],['Large onion diced','1'],['Garlic minced','4 cloves'],['Cumin','2 tsp'],['Smoked paprika','1 tsp'],['Chili powder','1 tsp'],['Lime','2']],steps:['Saute onion and garlic until softened.','Add spices. Add tomatoes, broth, and beans.','Place whole chicken in liquid. Bring to simmer.','Cover and cook 25-30 min. Remove chicken and shred.','Return to pot. Simmer 10 min to thicken.'],batch:'Freezes beautifully.',link:'https://www.budgetbytes.com/white-chicken-chili/'}},
+    {id:'jd4',emoji:'🥣',name:'Beef and Black Bean Chili',cal:600,pro:50,carb:40,fat:22,fib:14,
+     portions:[{i:'🥩',n:'Cooked 80/20 ground beef',g:'5 oz',v:'Palm-sized in the bowl'},{i:'🫘',n:'Black beans',g:'half cup',v:'Your cupped palm'},{i:'🍅',n:'Chili sauce and tomatoes',g:'3/4 cup',v:'Fills bowl halfway'}],
+     recipe:{ings:[['Ground beef 80/20 batch','2 lbs'],['Black beans','2 cans 15oz'],['Crushed tomatoes','1 can 28oz'],['Beef broth low sodium','1 cup'],['Large onion diced','1'],['Bell pepper diced','2'],['Chili powder','2 tbsp'],['Cumin','1 tbsp'],['Smoked paprika','1 tsp']],steps:['Brown beef in large pot. Drain ALL fat.','Add onion, garlic, bell pepper. Cook 5 min.','Add all spices, stir 1 min.','Add tomatoes, beans, and broth.','Simmer uncovered 25-30 min.'],batch:'One of the best freezer meals. Tastes better day 2.',link:'https://www.budgetbytes.com/best-damn-chili/'}},
+    {id:'jd5',emoji:'🫕',name:'Beef Stuffed Bell Peppers',cal:540,pro:46,carb:30,fat:22,fib:8,
+     portions:[{i:'🫑',n:'Stuffed bell pepper',g:'1 large pepper',v:'One fist-sized pepper'},{i:'🥩',n:'Beef and rice filling',g:'5 oz beef cooked',v:'Fills the pepper tightly'}],
+     recipe:{ings:[['Ground beef 80/20','1.5 lbs'],['Large bell peppers','5 any color'],['Cooked brown rice','1 cup'],['Tomato sauce no sugar added','1 can 15oz'],['Onion diced fine','1 small'],['Italian seasoning','1 tsp'],['Cumin','1 tsp']],steps:['Preheat oven to 375F. Cut tops off peppers, remove seeds.','Brown beef with onion. Drain fat thoroughly.','Mix beef with rice, half the sauce, and spices.','Fill peppers tightly. Top with remaining sauce.','Bake 35-40 min.'],batch:'Bake 5 at once. Refrigerate 4 days or freeze.',link:'https://www.budgetbytes.com/stuffed-bell-peppers/'}},
+    {id:'jd6',emoji:'🥘',name:'Korean Ground Beef Bowl Bulgogi',cal:560,pro:46,carb:34,fat:22,fib:5,
+     portions:[{i:'🥩',n:'Ground beef cooked',g:'5 oz',v:'Palm-sized in the bowl'},{i:'🍚',n:'Steamed rice',g:'half cup',v:'Your fist'},{i:'🥦',n:'Roasted broccoli',g:'1 cup',v:'Heaping cup, shrinks when roasted'}],
+     recipe:{ings:[['Ground beef 80/20 batch','2 lbs'],['Brown rice dry','1.5 cups'],['Broccoli florets','2 heads'],['Garlic minced','5 cloves'],['Low-sodium soy sauce','4 tbsp'],['Sesame oil','1 tsp'],['Rice vinegar','2 tbsp'],['Honey','1 tsp minimal'],['Chili garlic sauce','1 tsp']],steps:['Cook rice and roast broccoli at 425F for 20 min.','Brown beef over high heat. Drain all fat.','Add garlic, cook 1 min.','Mix soy sauce, sesame oil, vinegar, honey, chili sauce. Pour over beef.','Simmer 3-4 min. Portion over rice with broccoli.'],batch:'Makes 5 portions. Refrigerate 4 days or freeze beef mixture.',link:'https://damndelicious.net/2019/10/07/ground-beef-bulgogi-bowls/'}}
+  ],
+  snacks:[
+    {id:'js1',emoji:'🍎',name:'Walnuts and Apple',cal:250,pro:5,carb:22,fat:16,fib:5,
+     portions:[{i:'🌰',n:'Raw walnuts',g:'14 halves',v:'Fits in your palm'},{i:'🍎',n:'Medium apple',g:'1 apple',v:'Size of a tennis ball'}],
+     recipe:{ings:[['Raw walnuts','14 halves'],['Medium apple','1']],steps:['Pre-portion walnuts into bags on Sunday.','Pair with apple. No prep.'],batch:'Bag 5 portions each Sunday. Walnuts raise HDL.',link:'https://www.healthline.com/nutrition/benefits-of-walnuts'}},
+    {id:'js2',emoji:'🥛',name:'Cottage Cheese and Cucumber',cal:200,pro:28,carb:8,fat:4,fib:1,
+     portions:[{i:'🥛',n:'Low-fat cottage cheese',g:'3/4 cup',v:'Fist-sized scoop'},{i:'🥒',n:'Sliced cucumber',g:'1 cup sliced',v:'Half a medium cucumber'}],
+     recipe:{ings:[['Low-fat cottage cheese','3/4 cup'],['Cucumber half medium','half medium'],['Everything bagel seasoning','1 tsp']],steps:['Slice cucumber.','Top cottage cheese with seasoning.'],batch:'Pre-portion cottage cheese into 5 containers.',link:'https://www.eatingwell.com/recipe/cottage-cheese-snack/'}},
+    {id:'js3',emoji:'🥚',name:'Hard-Boiled Eggs and Hot Sauce',cal:160,pro:18,carb:1,fat:10,fib:0,
+     portions:[{i:'🥚',n:'Hard-boiled eggs',g:'2 large',v:'Each egg size of a billiard ball'},{i:'🌶',n:'Hot sauce',g:'few dashes',v:'Quick splash'}],
+     recipe:{ings:[['Large eggs batch','8-10'],['Hot sauce','to taste']],steps:['Cover eggs with cold water by 1 inch.','Bring to boil, cover, remove from heat. Wait 12 min.','Ice bath 5 min. Store in water up to 5 days.'],batch:'Boil 8-10 eggs on Sunday.',link:'https://www.seriouseats.com/the-food-lab-how-to-make-perfect-deviled-eggs'}},
+    {id:'js4',emoji:'🍓',name:'Cottage Cheese and Berries',cal:220,pro:26,carb:18,fat:3,fib:3,
+     portions:[{i:'🥛',n:'Low-fat cottage cheese',g:'3/4 cup',v:'Fist-sized scoop'},{i:'🍓',n:'Mixed berries',g:'half cup',v:'Loose handful'}],
+     recipe:{ings:[['Low-fat cottage cheese','3/4 cup'],['Mixed berries','half cup'],['Cinnamon','pinch']],steps:['Top cottage cheese with berries and cinnamon.'],batch:'Pre-portion cottage cheese. Keep berries separate.',link:'https://www.eatingwell.com/recipe/cottage-cheese-snack/'}},
+    {id:'js5',emoji:'🥦',name:'Veggies and Cottage Cheese Dip',cal:180,pro:22,carb:12,fat:3,fib:5,
+     portions:[{i:'🥕',n:'Baby carrots',g:'10-12',v:'Small fistful'},{i:'🥦',n:'Broccoli florets',g:'1 cup',v:'About 6-8 florets'},{i:'🥛',n:'Cottage cheese dip',g:'half cup',v:'Generous cupped-palm amount'}],
+     recipe:{ings:[['Low-fat cottage cheese','half cup'],['Baby carrots','10-12'],['Broccoli florets','1 cup'],['Garlic powder','quarter tsp'],['Everything bagel seasoning','half tsp']],steps:['Stir seasonings into cottage cheese.','Portion with veggies on the side.'],batch:'Make dip in bulk. Keeps 5 days.',link:'https://www.budgetbytes.com/veggie-dip/'}}
+  ]
+};
+
+// ── LAUREN MEALS ─────────────────────────────────────────────────────────────
+var L_MEALS = {
+  breakfast:[
+    {id:'lb1',emoji:'🥣',name:'Berry Protein Oats',cal:400,pro:30,carb:45,fat:9,fib:10,
+     portions:[{i:'🥣',n:'Rolled oats',g:'70g',v:'About 3/4 cup'},{i:'🍓',n:'Mixed berries',g:'80g',v:'Half cup, a loose handful'},{i:'🥛',n:'Almond milk',g:'240ml',v:'1 cup'},{i:'💪',n:'Protein powder',g:'25g',v:'3/4 scoop'}],
+     recipe:{ings:[['Rolled oats','70g'],['Chia seeds','1 tbsp'],['Almond milk','1 cup'],['Vanilla protein powder','3/4 scoop'],['Mixed berries','half cup'],['Cinnamon','half tsp']],steps:['Mix oats, chia, and protein in a jar.','Pour almond milk over and stir.','Refrigerate overnight.','Top with berries before eating.'],batch:'Prep 5 jars Sunday. Stays fresh 5 days.',link:'https://www.budgetbytes.com/overnight-oats/'}},
+    {id:'lb2',emoji:'🍳',name:'Veggie Egg White Scramble',cal:320,pro:32,carb:12,fat:14,fib:4,
+     portions:[{i:'🥚',n:'Eggs and egg whites',g:'2 eggs plus half cup whites',v:'Fills the pan nicely'},{i:'🧀',n:'Feta cheese',g:'2 tbsp',v:'Small crumble'},{i:'🥬',n:'Spinach and peppers',g:'2 handfuls',v:'Big pile, wilts down'}],
+     recipe:{ings:[['Large eggs','2'],['Egg whites','half cup'],['Baby spinach','2 handfuls'],['Bell pepper diced','half cup'],['Feta cheese','2 tbsp'],['Olive oil','1 tsp'],['Garlic powder','quarter tsp']],steps:['Whisk eggs and whites together.','Saute peppers in oil 2 min. Add spinach until wilted.','Pour eggs over. Fold gently until set.','Top with feta.'],batch:'Prep overnight: chop peppers in advance.',link:'https://www.eatingwell.com/recipe/252390/scrambled-eggs-with-spinach-tomatoes/'}},
+    {id:'lb3',emoji:'🍦',name:'Greek Yogurt and Fruit Bowl',cal:340,pro:35,carb:32,fat:6,fib:4,
+     portions:[{i:'🥛',n:'0% Greek yogurt',g:'1 cup',v:'Baseball-sized scoop'},{i:'💪',n:'Protein powder',g:'half scoop',v:'Stirred smooth'},{i:'🍓',n:'Fresh berries',g:'half cup',v:'Loose handful'},{i:'🌰',n:'Walnuts',g:'6 halves',v:'Small cluster in palm'}],
+     recipe:{ings:[['Plain 0% Greek yogurt','1 cup'],['Vanilla protein powder','half scoop'],['Mixed berries','half cup'],['Walnuts','6 halves'],['Ground flaxseed','1 tbsp'],['Honey optional','very small drizzle']],steps:['Stir protein powder into yogurt until smooth.','Top with berries, walnuts, flaxseed.','Tiny honey drizzle optional.'],batch:'Pre-portion yogurt into containers.',link:'https://www.wellplated.com/greek-yogurt-bowl/'}},
+    {id:'lb4',emoji:'🐟',name:'Smoked Salmon Toast',cal:380,pro:30,carb:30,fat:14,fib:4,
+     portions:[{i:'🍞',n:'Whole grain toast',g:'2 slices',v:'2 standard slices'},{i:'🐟',n:'Smoked salmon',g:'3 oz',v:'3-4 thin slices'},{i:'🧀',n:'Cream cheese light',g:'2 tbsp',v:'Thin spread on each slice'}],
+     recipe:{ings:[['Whole grain bread','2 slices'],['Smoked salmon','3 oz'],['Light cream cheese','2 tbsp'],['Capers','1 tsp'],['Red onion thinly sliced','few slices'],['Lemon juice','squeeze'],['Everything bagel seasoning','half tsp'],['Fresh dill optional','pinch']],steps:['Toast bread.','Spread cream cheese on each slice.','Layer smoked salmon over cream cheese.','Top with capers, red onion, lemon squeeze, and seasoning.'],batch:'No prep needed. Takes 5 minutes.',link:'https://www.wellplated.com/smoked-salmon-toast/'}},
+    {id:'lb5',emoji:'🥞',name:'Protein Cottage Cheese Pancakes',cal:360,pro:34,carb:26,fat:10,fib:3,
+     portions:[{i:'🥛',n:'Cottage cheese',g:'3/4 cup',v:'Generous fist-sized scoop'},{i:'🥚',n:'Eggs',g:'2 large',v:'2 eggs'},{i:'🌾',n:'Oat flour',g:'one-third cup',v:'Slightly less than cupped palm'}],
+     recipe:{ings:[['Low-fat cottage cheese','3/4 cup'],['Large eggs','2'],['Oat flour','1/3 cup'],['Cinnamon','half tsp'],['Vanilla extract','half tsp'],['Salt','pinch']],steps:['Blend all ingredients smooth.','Medium heat non-stick pan, light spray.','Quarter-cup batter per pancake. 2-3 min per side.','Top with berries or a tiny maple drizzle.'],batch:'Batter keeps 2 days refrigerated.',link:'https://www.budgetbytes.com/cottage-cheese-pancakes/'}}
+  ],
+  lunch:[
+    {id:'ll1',emoji:'🍱',name:'Teriyaki Salmon Bowl',cal:500,pro:40,carb:38,fat:18,fib:6,
+     portions:[{i:'🐟',n:'Baked salmon fillet',g:'5 oz',v:'Palm-sized fillet'},{i:'🍚',n:'Brown rice cooked',g:'half cup',v:'Fist-sized portion'},{i:'🥦',n:'Steamed broccoli',g:'1 cup',v:'Good fistful'}],
+     recipe:{ings:[['Salmon fillets batch','5 x 5oz fillets'],['Brown rice dry','1.5 cups'],['Broccoli','2 heads'],['Low-sodium soy sauce','3 tbsp'],['Honey','1 tbsp'],['Rice vinegar','1 tbsp'],['Garlic minced','2 cloves'],['Sesame oil','1 tsp'],['Sesame seeds','1 tsp']],steps:['Make teriyaki sauce: whisk soy, honey, vinegar, garlic, sesame oil.','Brush salmon fillets with sauce.','Bake at 400F for 12-15 min.','Cook rice and steam broccoli.','Portion into 5 containers.'],batch:'Salmon keeps 3 days refrigerated. Freeze rice separately.',link:'https://www.budgetbytes.com/teriyaki-salmon-bowls/'}},
+    {id:'ll2',emoji:'🥗',name:'Mediterranean Tuna Salad',cal:420,pro:38,carb:22,fat:18,fib:7,
+     portions:[{i:'🐟',n:'Canned tuna in water',g:'5 oz can',v:'One standard can, well drained'},{i:'🧀',n:'Feta cheese',g:'3 tbsp',v:'Small handful'},{i:'🥗',n:'Mixed greens and veggies',g:'2 cups',v:'Large bowl loosely packed'}],
+     recipe:{ings:[['Canned tuna in water','1 can 5oz per serving'],['Mixed greens','2 cups'],['Cherry tomatoes halved','half cup'],['Cucumber diced','half cup'],['Kalamata olives','6-8'],['Feta cheese crumbled','3 tbsp'],['Olive oil','1 tbsp'],['Lemon juice','1 tbsp'],['Dried oregano','half tsp']],steps:['Drain tuna well.','Combine greens, tomatoes, cucumber, olives.','Mix olive oil, lemon, oregano for dressing.','Top salad with tuna and feta. Drizzle dressing.'],batch:'Prep vegetables in bulk. Dress each serving fresh.',link:'https://www.budgetbytes.com/mediterranean-tuna-salad/'}},
+    {id:'ll3',emoji:'🍜',name:'Thai Shrimp Rice Noodle Bowl',cal:460,pro:34,carb:48,fat:12,fib:5,
+     portions:[{i:'🦐',n:'Cooked shrimp',g:'5 oz',v:'About 8-10 medium shrimp'},{i:'🍜',n:'Rice noodles cooked',g:'1 cup',v:'About a fist and a half'},{i:'🥬',n:'Bok choy and peppers',g:'1 cup',v:'Heaping cup loosely packed'}],
+     recipe:{ings:[['Large shrimp peeled batch','1.5 lbs'],['Rice noodles dry','8 oz'],['Bok choy chopped','2 heads'],['Bell peppers sliced','2'],['Fish sauce','2 tbsp'],['Lime juice','2 tbsp'],['Honey','1 tsp'],['Garlic minced','3 cloves'],['Chili flakes','to taste'],['Fresh cilantro','handful']],steps:['Cook rice noodles per package. Rinse with cold water.','Stir-fry shrimp in hot pan 2 min per side. Set aside.','Stir-fry bok choy and peppers 3 min.','Mix fish sauce, lime, honey for sauce. Pour over.','Toss with noodles and shrimp. Top with cilantro.'],batch:'Shrimp keeps 3 days. Noodles best fresh.',link:'https://www.budgetbytes.com/thai-shrimp-noodle-bowls/'}},
+    {id:'ll4',emoji:'🌮',name:'Fish Taco Bowl',cal:480,pro:36,carb:40,fat:16,fib:8,
+     portions:[{i:'🐟',n:'Baked white fish',g:'5 oz',v:'Palm-sized fillet'},{i:'🫘',n:'Black beans',g:'half cup',v:'Loosely cupped palm'},{i:'🍚',n:'Cilantro lime rice',g:'half cup',v:'About your fist'}],
+     recipe:{ings:[['Cod or tilapia fillets batch','5 x 5oz'],['Black beans drained','2 cans 15oz'],['Brown rice dry','1.5 cups'],['Fresh cilantro','large bunch'],['Lime','4'],['Cumin','1 tsp'],['Chili powder','1 tsp'],['Garlic powder','half tsp'],['Cabbage shredded','2 cups'],['Salsa no sugar added','to serve']],steps:['Season fish with cumin, chili powder, garlic powder.','Bake at 400F for 12-15 min.','Cook rice. Toss with lime juice and cilantro.','Portion rice, beans, and fish into 5 containers.','Top with shredded cabbage and salsa at serving.'],batch:'Fish keeps 3 days. Excellent freezer meal without toppings.',link:'https://www.budgetbytes.com/baja-fish-tacos/'}}
+  ],
+  dinner:[
+    {id:'ld1',emoji:'🍋',name:'Lemon Herb Baked Salmon',cal:450,pro:42,carb:18,fat:22,fib:5,
+     portions:[{i:'🐟',n:'Salmon fillet',g:'5 oz',v:'Palm-sized'},{i:'🥦',n:'Roasted vegetables',g:'1.5 cups',v:'Large heaping cup'},{i:'🫘',n:'White beans',g:'half cup',v:'Cupped palm'}],
+     recipe:{ings:[['Salmon fillets batch','5 x 5oz'],['Asparagus or broccoli','2 lbs'],['White beans canned','2 cans 15oz'],['Olive oil','3 tbsp'],['Garlic minced','4 cloves'],['Lemon','3'],['Fresh herbs dill or parsley','handful'],['Salt and pepper','to taste']],steps:['Preheat oven to 400F.','Toss vegetables in olive oil, garlic, salt.','Place salmon on sheet pan. Season with lemon, herbs.','Roast everything together 20-25 min.','Warm white beans with olive oil and garlic as base.','Portion into 5 containers.'],batch:'Makes 5 portions. Keeps 3 days.',link:'https://www.budgetbytes.com/lemon-herb-salmon/'}},
+    {id:'ld2',emoji:'🍲',name:'Coconut Curry Shrimp',cal:480,pro:36,carb:40,fat:18,fib:6,
+     portions:[{i:'🦐',n:'Cooked shrimp',g:'5 oz',v:'About 8-10 medium shrimp'},{i:'🍚',n:'Jasmine rice cooked',g:'half cup',v:'Slightly less than a fist'},{i:'🥥',n:'Coconut curry sauce',g:'4 tbsp',v:'Good ladle over the rice'}],
+     recipe:{ings:[['Large shrimp peeled batch','1.5 lbs'],['Coconut milk full fat','1 can 13.5oz'],['Crushed tomatoes','half can'],['Yellow onion diced','1'],['Garlic minced','4 cloves'],['Fresh ginger grated','1 tbsp'],['Red curry paste','2 tbsp'],['Jasmine rice dry','1.5 cups'],['Fresh spinach','2 cups'],['Lime','2'],['Fresh cilantro','to serve']],steps:['Saute onion until soft. Add garlic and ginger 1 min.','Add curry paste, stir 30 sec.','Add coconut milk and tomatoes. Simmer 10 min.','Add shrimp. Cook 4-5 min until pink.','Stir in spinach until wilted.','Serve over rice with lime and cilantro.'],batch:'Makes 5 portions. Sauce freezes well without shrimp, add fresh shrimp when reheating.',link:'https://www.budgetbytes.com/coconut-curry-shrimp/'}},
+    {id:'ld3',emoji:'🥘',name:'Mediterranean Baked Cod',cal:420,pro:40,carb:25,fat:14,fib:7,
+     portions:[{i:'🐟',n:'Baked cod fillet',g:'6 oz',v:'Slightly larger than palm'},{i:'🫒',n:'Mediterranean vegetables',g:'1.5 cups',v:'Large heaping cup'},{i:'🫘',n:'Chickpeas',g:'half cup',v:'Cupped palm'}],
+     recipe:{ings:[['Cod fillets batch','5 x 6oz'],['Cherry tomatoes','2 pints'],['Kalamata olives','half cup'],['Canned chickpeas drained','2 cans 15oz'],['Olive oil','3 tbsp'],['Garlic minced','4 cloves'],['Dried oregano','1 tsp'],['Cumin','half tsp'],['Lemon','2'],['Fresh parsley','handful']],steps:['Preheat oven to 400F.','Toss tomatoes, olives, chickpeas with oil, garlic, oregano.','Spread in baking dish. Nestle cod fillets on top.','Season cod with cumin, lemon, salt.','Bake 20-25 min until cod flakes easily.','Finish with fresh parsley.'],batch:'Makes 5 portions. Keeps 3 days.',link:'https://www.budgetbytes.com/baked-cod/'}},
+    {id:'ld4',emoji:'🌯',name:'Turkey and Veggie Stuffed Peppers',cal:440,pro:38,carb:32,fat:14,fib:8,
+     portions:[{i:'🫑',n:'Stuffed bell pepper',g:'1 large pepper',v:'Fist-sized pepper'},{i:'🦃',n:'Turkey and rice filling',g:'5 oz turkey cooked',v:'Fills the pepper tightly'}],
+     recipe:{ings:[['Lean ground turkey','1.5 lbs'],['Large bell peppers','5'],['Cooked brown rice','1 cup'],['Tomato sauce no sugar added','1 can 15oz'],['Onion diced fine','1 small'],['Garlic minced','3 cloves'],['Italian seasoning','1 tsp'],['Cumin','half tsp'],['Feta cheese optional','quarter cup']],steps:['Preheat oven to 375F. Cut tops off peppers, remove seeds.','Brown turkey with onion and garlic. Drain fat.','Mix with rice, half the sauce, and spices.','Fill peppers tightly. Top with remaining sauce.','Bake 35-40 min. Optional feta on top last 5 min.'],batch:'Bake 5 at once. Keeps 4 days or freeze.',link:'https://www.budgetbytes.com/stuffed-bell-peppers/'}},
+    {id:'ld5',emoji:'🍛',name:'Chicken Tikka with Cauliflower Rice',cal:460,pro:44,carb:22,fat:18,fib:7,
+     portions:[{i:'🍗',n:'Chicken thigh cooked',g:'6 oz',v:'2 palm-sized pieces'},{i:'🌸',n:'Cauliflower rice',g:'3/4 cup',v:'Two loosely cupped hands'},{i:'🍅',n:'Tikka sauce',g:'3 tbsp',v:'Good coating over chicken'}],
+     recipe:{ings:[['Boneless chicken thighs batch','2 lbs'],['Crushed tomatoes','1 can 14oz'],['Coconut milk','half can'],['Plain Greek yogurt','half cup'],['Tikka masala spice blend','3 tbsp'],['Garlic minced','4 cloves'],['Fresh ginger','1 tbsp'],['Frozen cauliflower rice','2 bags 12oz']],steps:['Marinate chicken in yogurt and 1 tbsp tikka spice 30 min.','Sear chicken until browned. Set aside.','Saute garlic and ginger. Add remaining spice 30 sec.','Add tomatoes and coconut milk. Simmer 10 min.','Return chicken. Simmer 20 min.','Portion over cauliflower rice.'],batch:'Makes 5 portions. Freeze 3.',link:'https://www.budgetbytes.com/chicken-tikka-masala/'}}
+  ],
+  snacks:[
+    {id:'ls1',emoji:'🍎',name:'Apple and Almonds',cal:230,pro:5,carb:24,fat:13,fib:5,
+     portions:[{i:'🍎',n:'Medium apple',g:'1 apple',v:'Tennis ball size'},{i:'🌰',n:'Raw almonds',g:'20 almonds',v:'Small handful'}],
+     recipe:{ings:[['Medium apple','1'],['Raw almonds','20 almonds']],steps:['No prep needed. Pre-portion almonds into bags.'],batch:'Bag 5 almond portions each Sunday.',link:'https://www.healthline.com/nutrition/9-proven-benefits-of-almonds'}},
+    {id:'ls2',emoji:'🐟',name:'Tuna and Crackers',cal:240,pro:25,carb:18,fat:7,fib:2,
+     portions:[{i:'🐟',n:'Canned tuna in water',g:'3 oz',v:'Half a standard can'},{i:'🍘',n:'Whole grain crackers',g:'8-10 crackers',v:'Small stack'}],
+     recipe:{ings:[['Canned tuna in water drained','3 oz'],['Whole grain crackers','8-10'],['Lemon juice','squeeze'],['Black pepper','pinch']],steps:['Drain tuna well. Season with lemon and pepper.','Serve with crackers.'],batch:'Keep individual tuna packets at work for easy snack.',link:'https://www.healthline.com/nutrition/benefits-of-tuna'}},
+    {id:'ls3',emoji:'🥛',name:'Greek Yogurt with Honey',cal:200,pro:20,carb:22,fat:3,fib:0,
+     portions:[{i:'🥛',n:'0% Greek yogurt',g:'3/4 cup',v:'Baseball-sized scoop'},{i:'🍯',n:'Honey drizzle',g:'1 tsp',v:'Tiny drizzle only'}],
+     recipe:{ings:[['Plain 0% Greek yogurt','3/4 cup'],['Raw honey','1 tsp'],['Cinnamon','pinch']],steps:['Spoon yogurt into bowl.','Tiny drizzle of honey and cinnamon on top.'],batch:'Pre-portion yogurt into containers.',link:'https://www.healthline.com/nutrition/greek-yogurt-benefits'}},
+    {id:'ls4',emoji:'🫙',name:'Cottage Cheese and Berries',cal:210,pro:24,carb:18,fat:3,fib:3,
+     portions:[{i:'🥛',n:'Low-fat cottage cheese',g:'3/4 cup',v:'Fist-sized scoop'},{i:'🍓',n:'Mixed berries',g:'half cup',v:'Loose handful'}],
+     recipe:{ings:[['Low-fat cottage cheese','3/4 cup'],['Mixed berries','half cup'],['Cinnamon','pinch']],steps:['Top cottage cheese with berries and cinnamon.'],batch:'Pre-portion into containers.',link:'https://www.eatingwell.com/recipe/cottage-cheese-snack/'}},
+    {id:'ls5',emoji:'🥒',name:'Veggies and Hummus',cal:190,pro:8,carb:22,fat:7,fib:7,
+     portions:[{i:'🥕',n:'Baby carrots',g:'10-12',v:'Small fistful'},{i:'🥒',n:'Cucumber spears',g:'half cup',v:'4-5 spears'},{i:'🫘',n:'Hummus',g:'3 tbsp',v:'Generous tablespoon each piece'}],
+     recipe:{ings:[['Baby carrots','10-12'],['Cucumber','half medium'],['Hummus','3 tbsp']],steps:['Slice cucumber into spears.','Portion hummus into a small container.','Pack with veggies.'],batch:'Prep veggie portions at start of week.',link:'https://www.budgetbytes.com/homemade-hummus/'}}
+  ]
+};
+
+// ── JORDAN WORKOUTS ──────────────────────────────────────────────────────────
+var J_WORKOUTS = [
+  {dow:3,day:'Wednesday',focus:'Push - Chest and Shoulders',min:45,
+   warmup:['5 min walk on treadmill','Arm circles x20 each direction','Band pull-aparts x15','Cat-cow stretch x10'],
+   exercises:[
+    {name:'Seated DB Shoulder Press',sets:'3 x 10',rest:'60s',note:'Seated removes all spinal compression. Control the descent - 3 seconds down.',safe:'Back-safe: seated, no axial compression'},
+    {name:'Incline DB Chest Press',sets:'3 x 10',rest:'60s',note:'Set bench 30-45 degrees. Elbows at 45 to body, not flared wide.',safe:'Back-safe: lying on bench'},
+    {name:'Cable Face Pulls',sets:'3 x 15',rest:'45s',note:'Cable at eye level. Elbows high, pull rope toward forehead.',safe:'Back-safe: standing cable, no axial load'},
+    {name:'DB Lateral Raises',sets:'3 x 12',rest:'45s',note:'Slight forward lean, thumbs slightly down. Very light weight.',safe:'Back-safe: very light dumbbell only'},
+    {name:'Tricep Cable Pushdowns',sets:'3 x 12',rest:'45s',note:'Elbows pinned to sides. Full extension at bottom.',safe:'Back-safe: cable machine'}
+   ],
+   finisher:'10 min incline treadmill walk'},
+  {dow:4,day:'Thursday',focus:'Core Stability and Walk',min:45,
+   warmup:['5 min walk','Hip circles x15 each side','Glute bridge hold 30 seconds','Dead bug x5 each side slowly'],
+   exercises:[
+    {name:'Dead Bugs',sets:'3 x 10 per side',rest:'30s',note:'Press lower back INTO floor. Opposite arm and leg extend slowly.',safe:'Best core exercise for disc injuries'},
+    {name:'Bird Dogs',sets:'3 x 10 per side',rest:'30s',note:'Brace core before moving. Hips stay perfectly level.',safe:'McKenzie-approved for disc herniation'},
+    {name:'Glute Bridges',sets:'3 x 15',rest:'45s',note:'Drive through heels. Squeeze glutes hard at top.',safe:'Back-safe: floor-based, therapeutic for disc'},
+    {name:'Side-Lying Clamshells',sets:'3 x 15 per side',rest:'30s',note:'Stack feet, bend knees 90 degrees. Rotate at hip only.',safe:'Back-safe: side-lying, hip stabilization'},
+    {name:'Standing Pallof Press',sets:'3 x 12 per side',rest:'45s',note:'Brace core hard. Press straight out, hold 2 seconds.',safe:'Back-safe: lateral load not vertical'}
+   ],
+   finisher:'15 min brisk walk'},
+  {dow:5,day:'Friday',focus:'Pull - Back and Biceps',min:45,
+   warmup:['5 min walk','Band pull-aparts x15','Thoracic rotations x10 per side','Scapular retractions x15'],
+   exercises:[
+    {name:'Seated Cable Rows',sets:'3 x 12',rest:'60s',note:'Chest tall, pull elbows past body. Squeeze shoulder blades at peak.',safe:'Back-safe: seated, spine neutral'},
+    {name:'Chest-Supported DB Rows',sets:'3 x 10',rest:'60s',note:'Chest-down on incline bench. Completely removes lower back.',safe:'Zero spinal load: best back exercise for your injury'},
+    {name:'Lat Pulldowns',sets:'3 x 12',rest:'60s',note:'Lean slightly back. Pull bar to upper chest. Full stretch at top.',safe:'Back-safe: seated'},
+    {name:'Cable Bicep Curls',sets:'3 x 12',rest:'45s',note:'Elbows pinned to sides throughout. Slow and controlled.',safe:'Back-safe: light cable'},
+    {name:'Band Pull-Aparts',sets:'3 x 20',rest:'30s',note:'Arms fully straight. Pull band to chest level. High reps.',safe:'Back-safe: no spinal load'}
+   ],
+   finisher:'10 min walk cool-down'},
+  {dow:6,day:'Saturday',focus:'Full Upper and Core',min:45,
+   warmup:['5 min walk','Cat-cow x10','Dead bug x5 per side','Shoulder circles both directions'],
+   exercises:[
+    {name:'Machine Chest Press',sets:'3 x 10',rest:'60s',note:'Machine keeps fixed path. Full range of motion.',safe:'Back-safe: seated machine, fully supported'},
+    {name:'Cable Row Wide Grip',sets:'3 x 12',rest:'60s',note:'Wide overhand grip hits mid-trap and rear delts more.',safe:'Back-safe: seated cable'},
+    {name:'Arnold DB Press',sets:'3 x 10',rest:'60s',note:'Rotate palms as you press. Seated only.',safe:'Back-safe: seated, no compressive load'},
+    {name:'Dead Bugs',sets:'2 x 10 per side',rest:'30s',note:'Maintenance set. Same technique as Thursday.',safe:'Always therapeutic for disc'},
+    {name:'Glute Bridges Weighted',sets:'3 x 12',rest:'45s',note:'Place dumbbell on hips once bodyweight is easy.',safe:'Back-safe and therapeutic'}
+   ],
+   finisher:'10 min cool-down walk'}
+];
+
+// ── SHOPPING SECTIONS ────────────────────────────────────────────────────────
+var SHOP_SECTIONS = [
+  {id:'meat',label:'Meat and Protein',items:[
+    {id:'sh1',name:'Ground beef 80/20',amt:'5 lbs',who:'J',note:'Check freezer - you have a half cow'},
+    {id:'sh2',name:'Boneless chicken thighs',amt:'4 lbs',who:'B'},
+    {id:'sh3',name:'Boneless chicken breasts',amt:'2.5 lbs',who:'J'},
+    {id:'sh4',name:'Lean ground turkey',amt:'3 lbs',who:'B'},
+    {id:'sh5',name:'Ground chicken',amt:'2 lbs',who:'J'},
+    {id:'sh6',name:'Large eggs',amt:'3 dozen',who:'B'},
+    {id:'sh7',name:'Salmon fillets',amt:'2 lbs',who:'L'},
+    {id:'sh8',name:'Cod or tilapia fillets',amt:'2 lbs',who:'L'},
+    {id:'sh9',name:'Large shrimp peeled',amt:'1.5 lbs',who:'L'},
+    {id:'sh10',name:'Canned tuna in water',amt:'6 x 5oz cans',who:'L'},
+    {id:'sh11',name:'Smoked salmon',amt:'4 oz package',who:'L'}
+  ]},
+  {id:'dairy',label:'Dairy and Refrigerated',items:[
+    {id:'sh12',name:'Low-fat cottage cheese',amt:'3 x 24oz containers',who:'B',note:'Check stock'},
+    {id:'sh13',name:'Plain 0% Greek yogurt',amt:'2 x 32oz containers',who:'B'},
+    {id:'sh14',name:'Feta cheese crumbled',amt:'2 x 6oz containers',who:'B'},
+    {id:'sh15',name:'Light cream cheese',amt:'1 x 8oz block',who:'L'},
+    {id:'sh16',name:'Unsweetened almond milk',amt:'2 x 64oz cartons',who:'B'},
+    {id:'sh17',name:'Vanilla protein powder',amt:'Check stock - 1 lb bag if needed',who:'B'}
+  ]},
+  {id:'produce',label:'Produce',items:[
+    {id:'sh18',name:'Blueberries',amt:'2 pints or 2 lb frozen bag',who:'B',note:'Check stock'},
+    {id:'sh19',name:'Mixed berries frozen',amt:'2 x 2 lb bags',who:'B'},
+    {id:'sh20',name:'Baby spinach',amt:'2 x 5oz bags',who:'B'},
+    {id:'sh21',name:'Cherry tomatoes',amt:'3 pints',who:'B'},
+    {id:'sh22',name:'Cucumbers',amt:'5 medium',who:'B'},
+    {id:'sh23',name:'Bell peppers',amt:'10 mixed colors',who:'B'},
+    {id:'sh24',name:'Broccoli',amt:'4 large heads',who:'B'},
+    {id:'sh25',name:'Baby carrots',amt:'2 x 1 lb bags',who:'B',note:'Check stock'},
+    {id:'sh26',name:'Asparagus',amt:'2 bunches',who:'L'},
+    {id:'sh27',name:'Bok choy',amt:'2 heads',who:'L'},
+    {id:'sh28',name:'Red onions',amt:'3 large',who:'B'},
+    {id:'sh29',name:'Yellow onions',amt:'4 large',who:'B'},
+    {id:'sh30',name:'Fresh garlic',amt:'3 heads',who:'B'},
+    {id:'sh31',name:'Fresh ginger root',amt:'1 piece about 4 inches',who:'B'},
+    {id:'sh32',name:'Limes',amt:'6',who:'B'},
+    {id:'sh33',name:'Lemons',amt:'4',who:'B'},
+    {id:'sh34',name:'Green onions',amt:'1 bunch',who:'B'},
+    {id:'sh35',name:'Fresh cilantro',amt:'2 bunches',who:'L'},
+    {id:'sh36',name:'Fresh dill or parsley',amt:'1 bunch',who:'L'},
+    {id:'sh37',name:'Butter lettuce',amt:'1 head',who:'J'}
+  ]},
+  {id:'canned',label:'Canned and Jarred',items:[
+    {id:'sh38',name:'Black beans',amt:'6 x 15oz cans',who:'B'},
+    {id:'sh39',name:'Chickpeas garbanzo beans',amt:'4 x 15oz cans',who:'B'},
+    {id:'sh40',name:'White beans cannellini',amt:'2 x 15oz cans',who:'L'},
+    {id:'sh41',name:'Crushed tomatoes',amt:'4 x 14oz cans',who:'B'},
+    {id:'sh42',name:'Diced tomatoes',amt:'2 x 14oz cans',who:'B'},
+    {id:'sh43',name:'Tomato sauce no sugar added',amt:'3 x 15oz cans',who:'B'},
+    {id:'sh44',name:'Low-sodium chicken broth',amt:'2 x 32oz cartons',who:'B'},
+    {id:'sh45',name:'Full-fat coconut milk',amt:'3 x 13.5oz cans',who:'B'},
+    {id:'sh46',name:'Kalamata olives',amt:'2 x 6oz jars',who:'B'},
+    {id:'sh47',name:'Salsa no sugar added',amt:'1 x 16oz jar',who:'J'},
+    {id:'sh48',name:'Hummus',amt:'1 x 10oz container',who:'L'},
+    {id:'sh49',name:'Capers',amt:'1 small jar',who:'L'}
+  ]},
+  {id:'dry',label:'Dry and Pantry',items:[
+    {id:'sh50',name:'Rolled oats Old Fashioned',amt:'1 x 42oz canister',who:'B',note:'Check stock'},
+    {id:'sh51',name:'Brown rice',amt:'2 x 2 lb bags',who:'B'},
+    {id:'sh52',name:'Jasmine rice',amt:'1 x 2 lb bag',who:'J'},
+    {id:'sh53',name:'Rice noodles',amt:'1 x 8oz package',who:'L'},
+    {id:'sh54',name:'Whole grain bread',amt:'1 loaf',who:'L'},
+    {id:'sh55',name:'Whole grain crackers',amt:'1 box',who:'L'},
+    {id:'sh56',name:'Green or brown lentils',amt:'1 x 1 lb bag',who:'J'},
+    {id:'sh57',name:'Chia seeds',amt:'Check stock - 1 x 12oz bag if needed',who:'B'},
+    {id:'sh58',name:'Ground flaxseed',amt:'Check stock - 1 x 14oz bag if needed',who:'B'},
+    {id:'sh59',name:'Raw walnuts',amt:'1 x 1 lb bag',who:'J'},
+    {id:'sh60',name:'Raw almonds',amt:'1 x 1 lb bag',who:'L'},
+    {id:'sh61',name:'Low-sodium soy sauce',amt:'1 x 10oz bottle',who:'B'},
+    {id:'sh62',name:'Fish sauce',amt:'1 x 6oz bottle',who:'B'},
+    {id:'sh63',name:'Oyster sauce',amt:'1 x 9oz bottle',who:'J'},
+    {id:'sh64',name:'Rice vinegar',amt:'1 x 10oz bottle',who:'B'},
+    {id:'sh65',name:'Sesame oil',amt:'1 x 8oz bottle',who:'B'},
+    {id:'sh66',name:'Olive oil extra virgin',amt:'Check stock - 1 x 32oz bottle',who:'B'},
+    {id:'sh67',name:'Almond butter no added sugar',amt:'1 x 16oz jar',who:'J'},
+    {id:'sh68',name:'Red curry paste',amt:'1 small jar',who:'L'},
+    {id:'sh69',name:'Teriyaki sauce low sodium',amt:'1 bottle',who:'L'}
+  ]},
+  {id:'spices',label:'Spices - check stock',items:[
+    {id:'sh70',name:'Tikka masala spice blend',amt:'1 jar if not stocked',who:'B'},
+    {id:'sh71',name:'Garam masala',amt:'Check stock',who:'J'},
+    {id:'sh72',name:'Cumin ground',amt:'Check stock',who:'B'},
+    {id:'sh73',name:'Smoked paprika',amt:'Check stock',who:'B'},
+    {id:'sh74',name:'Turmeric',amt:'Check stock',who:'J'},
+    {id:'sh75',name:'Chili powder',amt:'Check stock',who:'B'},
+    {id:'sh76',name:'Italian seasoning',amt:'Check stock',who:'B'},
+    {id:'sh77',name:'Dried oregano',amt:'Check stock',who:'L'},
+    {id:'sh78',name:'Everything bagel seasoning',amt:'1 jar if not stocked',who:'B'},
+    {id:'sh79',name:'Chili garlic sauce Sambal',amt:'1 jar',who:'J'}
+  ]},
+  {id:'frozen',label:'Frozen',items:[
+    {id:'sh80',name:'Frozen cauliflower rice',amt:'4 x 12oz bags',who:'B'},
+    {id:'sh81',name:'Frozen green peas',amt:'1 x 16oz bag',who:'J'}
+  ]}
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+var today = new Date();
+var todayDow = today.getDay();
+var currentDow = todayDow;
+var currentTab = 'today';
+var activeProfile = 'J'; // 'J' or 'L'
+var shopWeekOffset = 0;
+
+function loadState() { try { return JSON.parse(localStorage.getItem('hwApp3') || '{}'); } catch(e) { return {}; } }
+function saveState(s) { try { localStorage.setItem('hwApp3', JSON.stringify(s)); } catch(e) {} }
+function getState() { return loadState(); }
+function setState(fn) { var s = loadState(); fn(s); saveState(s); }
+
+function getDateKey(dow) {
+  var d = new Date(today);
+  d.setDate(d.getDate() + (dow - todayDow));
+  return d.toISOString().split('T')[0];
+}
+function getWeekKey(off) {
+  var d = new Date(today);
+  var day = d.getDay();
+  var diff = (day === 0 ? 1 : 8 - day);
+  d.setDate(d.getDate() + diff + (off * 7));
+  return d.toISOString().split('T')[0];
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function getDayType(dow) {
+  if (dow === 0) return 'transition';
+  if (dow >= 3 && dow <= 6) return 'work';
+  return 'off';
+}
+function getDayLabel(t) {
+  return t === 'work' ? 'Work Night' : t === 'transition' ? 'Rest / Transition' : 'Off Day';
+}
+function getMult(pid, id) {
+  var s = getState();
+  var key = 'portions_' + pid;
+  return (s[key] && s[key][id]) || 1;
+}
+function getMeals(pid) { return pid === 'J' ? J_MEALS : L_MEALS; }
+function getAllMeals(pid) {
+  var m = getMeals(pid);
+  return m.breakfast.concat(m.lunch).concat(m.dinner).concat(m.snacks);
+}
+function getMeal(pid, dow, slot) {
+  var s = getState();
+  var dk = getDateKey(dow);
+  var swapKey = 'swaps_' + pid;
+  if (s[swapKey] && s[swapKey][dk] && s[swapKey][dk][slot]) return s[swapKey][dk][slot];
+  var idx = dow % 3;
+  var meals = getMeals(pid);
+  var map = { breakfast: meals.breakfast[idx], lunch: meals.lunch[idx], dinner: meals.dinner[idx], snack: meals.snacks[idx] };
+  return map[slot];
+}
+function getDayMeals(pid, dow) {
+  if (pid === 'J') {
+    var type = getDayType(dow);
+    if (type === 'transition') return { breakfast: getMeal(pid,dow,'breakfast'), lunch: getMeal(pid,dow,'lunch'), snack: getMeal(pid,dow,'snack') };
+    return { breakfast: getMeal(pid,dow,'breakfast'), lunch: getMeal(pid,dow,'lunch'), dinner: getMeal(pid,dow,'dinner'), snack: getMeal(pid,dow,'snack') };
+  }
+  return { breakfast: getMeal(pid,dow,'breakfast'), lunch: getMeal(pid,dow,'lunch'), dinner: getMeal(pid,dow,'dinner'), snack: getMeal(pid,dow,'snack') };
+}
+function isMealEaten(pid, dow, slot) {
+  var s = getState();
+  var key = 'eaten_' + pid;
+  return !!(s[key] && s[key][getDateKey(dow)] && s[key][getDateKey(dow)][slot]);
+}
+function isWorkoutDone(pid, idx) {
+  var s = getState();
+  var key = 'wkdone_' + pid;
+  return !!(s[key] && s[key][idx]);
+}
+function getWaterCount(pid, dow) {
+  var s = getState();
+  var key = 'water_' + pid;
+  return (s[key] && s[key][getDateKey(dow)]) || 0;
+}
+function getCustomMeals(pid) {
+  var s = getState();
+  var key = 'custom_' + pid;
+  return s[key] || [];
+}
+function scaleG(g, m) {
+  if (m === 1) return g;
+  var match = g.match(/^(\d+)(.*)/);
+  if (match) return Math.round(parseInt(match[1]) * m) + match[2];
+  return g;
+}
+function getLaurenGoals() {
+  var s = getState();
+  return s.laurenGoals || null;
+}
+function getLaurenWorkouts() {
+  var s = getState();
+  return s.laurenWorkouts || null;
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────────────────────
+function switchProfile(pid) {
+  activeProfile = pid;
+  currentDow = todayDow;
+  render();
+}
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  else {
+    var tabs = ['today','meals','workouts','shopping','labs'];
+    var idx = tabs.indexOf(tab);
+    if (idx >= 0) document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  }
+  render();
+}
+function changeDay(dow) { currentDow = dow; render(); }
+function changeShopWeek(dir) { shopWeekOffset += dir; render(); }
+
+function adjPortion(pid, id, dir) {
+  var STEPS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5];
+  setState(function(s) {
+    var key = 'portions_' + pid;
+    if (!s[key]) s[key] = {};
+    var cur = s[key][id] || 1;
+    var idx = STEPS.indexOf(cur);
+    s[key][id] = STEPS[Math.max(0, Math.min(STEPS.length - 1, idx + dir))];
+  });
+  render();
+}
+function toggleEaten(pid, slot, dow) {
+  setState(function(s) {
+    var key = 'eaten_' + pid;
+    if (!s[key]) s[key] = {};
+    var dk = getDateKey(dow);
+    if (!s[key][dk]) s[key][dk] = {};
+    s[key][dk][slot] = !s[key][dk][slot];
+  });
+  render();
+}
+function toggleWorkoutL(idx) {
+  setState(function(s) {
+    if (!s.wkdone_L) s.wkdone_L = {};
+    s.wkdone_L[idx] = !s.wkdone_L[idx];
+  });
+  render();
+}
+function toggleWorkoutJ(dow) {
+  setState(function(s) {
+    if (!s.wkdone_J) s.wkdone_J = {};
+    s.wkdone_J[getDateKey(dow)] = !s.wkdone_J[getDateKey(dow)];
+  });
+  render();
+}
+function toggleWater(pid, dow, idx) {
+  setState(function(s) {
+    var key = 'water_' + pid;
+    if (!s[key]) s[key] = {};
+    var dk = getDateKey(dow);
+    var cur = s[key][dk] || 0;
+    s[key][dk] = (cur === idx + 1) ? idx : idx + 1;
+  });
+  render();
+}
+function toggleShopItem(itemId, wk) {
+  setState(function(s) {
+    if (!s.shop) s.shop = {};
+    if (!s.shop[wk]) s.shop[wk] = {};
+    s.shop[wk][itemId] = !s.shop[wk][itemId];
+  });
+  render();
+}
+function toggleShopSection(secId) {
+  setState(function(s) {
+    if (!s.shopExp) s.shopExp = {};
+    s.shopExp[secId] = (s.shopExp[secId] === false) ? true : false;
+  });
+  render();
+}
+function resetShop(wk) { setState(function(s) { if (s.shop) s.shop[wk] = {}; }); render(); }
+function toggleEl(id) { var el = document.getElementById(id); if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+
+function doSwap(pid, slot, dow, mealId) {
+  var meal = getAllMeals(pid).concat(getCustomMeals(pid)).filter(function(m) { return m.id === mealId; })[0];
+  if (!meal) return;
+  setState(function(s) {
+    var key = 'swaps_' + pid;
+    if (!s[key]) s[key] = {};
+    var dk = getDateKey(dow);
+    if (!s[key][dk]) s[key][dk] = {};
+    s[key][dk][slot] = meal;
+  });
+  closeDrawer();
+  setTimeout(render, 320);
+}
+
+function saveCustomMeal(pid) {
+  var name = document.getElementById('cm_name').value.trim();
+  var cal = parseInt(document.getElementById('cm_cal').value) || 0;
+  var pro = parseInt(document.getElementById('cm_pro').value) || 0;
+  var carb = parseInt(document.getElementById('cm_carb').value) || 0;
+  var fat = parseInt(document.getElementById('cm_fat').value) || 0;
+  var fib = parseInt(document.getElementById('cm_fib').value) || 0;
+  if (!name) { alert('Please enter a meal name.'); return; }
+  var meal = {
+    id: 'custom_' + Date.now(),
+    emoji: '🍽',
+    name: name,
+    cal: cal, pro: pro, carb: carb, fat: fat, fib: fib,
+    portions: [{i:'🍽',n:'Full serving',g:'1 serving',v:'As prepared'}],
+    recipe: {ings:[], steps:['Custom meal - see original source for preparation.'], batch:'', link:''}
+  };
+  setState(function(s) {
+    var key = 'custom_' + pid;
+    if (!s[key]) s[key] = [];
+    s[key].push(meal);
+  });
+  closeDrawer();
+  setTimeout(render, 320);
+}
+
+function fetchUrlNutrition(pid) {
+  var url = document.getElementById('cm_url').value.trim();
+  if (!url) { alert('Please enter a URL.'); return; }
+  var btn = document.getElementById('cm_fetch_btn');
+  btn.textContent = 'Fetching...';
+  btn.disabled = true;
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 500,
+      messages: [{
+        role: 'user',
+        content: 'Visit this URL and extract nutrition facts: ' + url + '\n\nReturn ONLY a JSON object with no markdown:\n{"name":"meal name","cal":0,"pro":0,"carb":0,"fat":0,"fib":0,"notes":"brief description"}\n\nIf you cannot access the URL or find nutrition data, return {"error":"Could not retrieve nutrition data from this URL"}'
+      }]
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var text = data.content.map(function(c) { return c.type === 'text' ? c.text : ''; }).join('');
+    try {
+      var parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+      if (parsed.error) {
+        alert(parsed.error);
+        btn.textContent = 'Fetch nutrition';
+        btn.disabled = false;
+        return;
+      }
+      document.getElementById('cm_name').value = parsed.name || '';
+      document.getElementById('cm_cal').value = parsed.cal || '';
+      document.getElementById('cm_pro').value = parsed.pro || '';
+      document.getElementById('cm_carb').value = parsed.carb || '';
+      document.getElementById('cm_fat').value = parsed.fat || '';
+      document.getElementById('cm_fib').value = parsed.fib || '';
+      btn.textContent = 'Fetch nutrition';
+      btn.disabled = false;
+    } catch(e) {
+      alert('Could not parse nutrition data. Please fill in manually.');
+      btn.textContent = 'Fetch nutrition';
+      btn.disabled = false;
+    }
+  })
+  .catch(function() {
+    alert('Could not connect to fetch service. Please fill in manually.');
+    btn.textContent = 'Fetch nutrition';
+    btn.disabled = false;
+  });
+}
+
+function saveLaurenGoals() {
+  var goals = {
+    primaryGoal: document.getElementById('lg_primary').value,
+    activityLevel: document.getElementById('lg_activity').value,
+    daysPerWeek: parseInt(document.getElementById('lg_days').value) || 3,
+    isPostpartum: document.getElementById('lg_postpartum').value,
+    postpartumDetail: document.getElementById('lg_ppdetail') ? document.getElementById('lg_ppdetail').value : '',
+    cardioPreference: document.getElementById('lg_cardio').value,
+    injuries: document.getElementById('lg_injuries').value.trim(),
+    otherNotes: document.getElementById('lg_notes').value.trim()
+  };
+  setState(function(s) {
+    s.laurenGoals = goals;
+    s.laurenWorkouts = null; // force regeneration
+  });
+  closeDrawer();
+  generateLaurenWorkouts(goals);
+}
+
+function generateLaurenWorkouts(goals) {
+  var loadingDiv = document.getElementById('content');
+  if (loadingDiv) {
+    loadingDiv.innerHTML = '<div style="padding:40px;text-align:center;color:#9998a8;font-size:14px">Generating workout plan for Lauren...</div>';
+  }
+  var prompt = 'Create a personalized workout plan for Lauren.\n\n';
+  prompt += 'Profile: 31-year-old woman, 5ft 5in, 145 lbs.\n';
+  prompt += 'Primary goal: ' + goals.primaryGoal + '\n';
+  prompt += 'Activity level: ' + goals.activityLevel + '\n';
+  prompt += 'Days per week: ' + goals.daysPerWeek + '\n';
+  prompt += 'Postpartum status: ' + goals.isPostpartum + '\n';
+  if (goals.postpartumDetail) prompt += 'Postpartum detail: ' + goals.postpartumDetail + '\n';
+  prompt += 'Cardio preference: ' + goals.cardioPreference + '\n';
+  if (goals.injuries) prompt += 'Injuries/concerns: ' + goals.injuries + '\n';
+  if (goals.otherNotes) prompt += 'Other notes: ' + goals.otherNotes + '\n';
+  prompt += '\nCreate ' + goals.daysPerWeek + ' workout sessions per week. Schedule is flexible, not tied to specific days.\n';
+  prompt += 'If postpartum (especially early postpartum or no PT clearance), focus on pelvic floor and core reconnection. Avoid crunches, sit-ups, heavy planks, and heavy compound lifts until cleared.\n';
+  prompt += 'Return ONLY a JSON array with no markdown, each session object having: {session:1, focus:"string", exercises:[{name:"",sets:"",rest:"",note:"",safe:""}], warmup:["string"], finisher:"string"}\n';
+  prompt += 'Each exercise should have a note on technique and a safe field explaining why it is appropriate. Keep sessions to 40-50 minutes.';
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1500,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var text = data.content.map(function(c) { return c.type === 'text' ? c.text : ''; }).join('');
+    try {
+      var parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+      setState(function(s) { s.laurenWorkouts = parsed; });
+      render();
+    } catch(e) {
+      setState(function(s) { s.laurenWorkouts = []; });
+      render();
+    }
+  })
+  .catch(function() {
+    setState(function(s) { s.laurenWorkouts = []; });
+    render();
+  });
+}
+
+function handleLabPDF(pid, event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  setState(function(s) { s['labsAnalyzing_' + pid] = true; });
+  render();
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var base64 = e.target.result.split(',')[1];
+    analyzeLabPDF(pid, base64, file.name);
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function analyzeLabPDF(pid, base64, filename) {
+  var name = pid === 'J' ? 'Jordan Walters, 37-year-old male, 6ft 2in, 226 lbs, night shift worker with bulged disc' : 'Lauren, 31-year-old female, 5ft 5in, 145 lbs';
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: [
+          {type:'document', source:{type:'base64', media_type:'application/pdf', data:base64}},
+          {type:'text', text:'This is a blood lab results PDF for ' + name + '. Extract lab values and return ONLY a JSON object with no markdown:\n{"date":"collection date","values":[{"name":"test name","value":"numeric value with units","range":"reference range","status":"good|warn|bad"}],"insights":[{"title":"short title","text":"1-2 sentence personalized recommendation"}]}\n\nStatus: good=in normal range, warn=borderline, bad=significantly outside. Only include insights for abnormal or borderline values.'}
+        ]
+      }]
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var text = data.content.map(function(c) { return c.type === 'text' ? c.text : ''; }).join('');
+    try {
+      var parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+      setState(function(s) { s['labs_' + pid] = parsed; s['labsAnalyzing_' + pid] = false; });
+    } catch(e) {
+      setState(function(s) { s['labs_' + pid] = {date:filename,values:[],insights:[{title:'Parse note',text:'Lab values extracted but could not be formatted. Try uploading again.'}]}; s['labsAnalyzing_' + pid] = false; });
+    }
+    render();
+  })
+  .catch(function() {
+    setState(function(s) { s['labs_' + pid] = {date:filename,values:[],insights:[{title:'Connection error',text:'Could not connect to analysis service.'}]}; s['labsAnalyzing_' + pid] = false; });
+    render();
+  });
+}
+
+function showDrawer(html) {
+  document.getElementById('drawerInner').innerHTML = html;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+// ── RENDER HELPERS ───────────────────────────────────────────────────────────
+function renderHeader() {
+  var pid = activeProfile;
+  var dow = currentDow;
+  var d = new Date(today);
+  d.setDate(d.getDate() + (dow - todayDow));
+  var hDay = document.getElementById('hDay');
+  var hDate = document.getElementById('hDate');
+  var hBadge = document.getElementById('hBadge');
+  if (!hDay) return;
+  if (pid === 'J') {
+    var type = getDayType(dow);
+    hDay.textContent = DAYS[dow] + (dow === todayDow ? ' - Today' : '');
+    hDate.textContent = d.toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
+    hBadge.textContent = getDayLabel(type);
+    hBadge.className = 'day-badge ' + (type==='work'?'badge-work':type==='transition'?'badge-trans':'badge-off');
+  } else {
+    hDay.textContent = DAYS[dow] + (dow === todayDow ? ' - Today' : '');
+    hDate.textContent = d.toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'});
+    hBadge.textContent = 'Flexible';
+    hBadge.className = 'day-badge badge-lauren';
+  }
+}
+
+function dayNav() {
+  var html = '<div class="day-nav">';
+  for (var i = 0; i < 7; i++) {
+    var work = activeProfile === 'J' && getDayType(i) === 'work';
+    html += '<div class="day-pill' + (i===currentDow?' active':'') + (work?' work-day':'') + '" onclick="changeDay(' + i + ')">' + SHORT[i] + (i===todayDow?'\u00B7':'') + '</div>';
+  }
+  return html + '</div>';
+}
+
+function mealCard(pid, meal, slot, dow) {
+  var m = getMult(pid, meal.id);
+  var cal = Math.round(meal.cal*m), pro = Math.round(meal.pro*m), carb = Math.round(meal.carb*m), fat = Math.round(meal.fat*m);
+  var eaten = isMealEaten(pid, dow, slot);
+  var label = {breakfast:'Breakfast',lunch:'Lunch',dinner:'Dinner',snack:'Snack'}[slot];
+  var portRows = '';
+  for (var pi = 0; pi < meal.portions.length; pi++) {
+    var p = meal.portions[pi];
+    portRows += '<div class="port-item"><span class="p-icon">' + p.i + '</span><span class="p-g">' + scaleG(p.g,m) + '</span><span class="p-v">' + p.n + ' - ' + p.v + '</span></div>';
+  }
+  return '<div class="meal-card' + (eaten?' eaten':'') + '">' +
+    '<div class="meal-hdr"><div class="meal-em">' + meal.emoji + (eaten?'<div class="eaten-ck">\u2713</div>':'') + '</div>' +
+    '<div class="meal-info"><div class="meal-type">' + label + '</div>' +
+    '<div class="meal-name">' + meal.name + '</div>' +
+    '<div class="meal-macros"><div class="macro"><span>' + cal + '</span> cal</div><div class="macro"><span>' + pro + 'g</span> protein</div><div class="macro"><span>' + carb + 'g</span> carbs</div><div class="macro"><span>' + fat + 'g</span> fat</div></div>' +
+    '</div></div>' +
+    '<div class="port-row"><span class="port-lbl">Serving size</span>' +
+    '<div class="port-ctrl"><button class="port-btn" onclick="adjPortion(\'' + pid + '\',\'' + meal.id + '\',-1)">\u2212</button>' +
+    '<div class="port-val">' + m + '\u00D7</div>' +
+    '<button class="port-btn" onclick="adjPortion(\'' + pid + '\',\'' + meal.id + '\',1)">+</button></div></div>' +
+    '<div class="meal-actions">' +
+    '<button class="btn-sm accent" onclick="openRecipe(\'' + pid + '\',\'' + meal.id + '\')">Recipe</button>' +
+    '<button class="btn-sm teal" onclick="openSwap(\'' + pid + '\',\'' + slot + '\',' + dow + ')">Swap</button>' +
+    '<button class="btn-sm" onclick="toggleEl(\'pv-' + slot + '-' + dow + '\')">Portions</button>' +
+    '<button class="btn-sm ' + (eaten?'ate':'uneaten') + '" onclick="toggleEaten(\'' + pid + '\',\'' + slot + '\',' + dow + ')">' + (eaten?'\u2713 Eaten':'Mark eaten') + '</button>' +
+    '</div>' +
+    '<div id="pv-' + slot + '-' + dow + '" style="display:none"><div class="port-vis"><div class="port-vis-title">Visual portion guide</div>' + portRows + '</div></div>' +
+    '</div>';
+}
+
+function waterWidget(pid, dow) {
+  var count = getWaterCount(pid, dow);
+  var target = 8;
+  var btns = '';
+  for (var i = 0; i < target; i++) {
+    btns += '<button class="water-btn' + (i<count?' filled':'') + '" onclick="toggleWater(\'' + pid + '\',' + dow + ',' + i + ')" title="' + ((i+1)*16) + ' oz">\uD83D\uDCA7</button>';
+  }
+  return '<div class="water-box">' +
+    '<div class="water-top"><span class="water-lbl">\uD83D\uDCA7 Water intake</span><span class="water-cnt"><span>' + count + '</span> / ' + target + ' bottles</span></div>' +
+    '<div class="water-btns">' + btns + '</div>' +
+    '<div class="water-oz">' + (count*16) + ' oz of ' + (target*16) + ' oz goal (' + target + ' x 16oz bottles)</div>' +
+    '</div>';
+}
+
+// ── TODAY TAB ────────────────────────────────────────────────────────────────
+function renderToday(dow) {
+  var pid = activeProfile;
+  var meals = getDayMeals(pid, dow);
+  var slots = Object.keys(meals);
+  var eatenCal = 0, eatenPro = 0;
+  for (var si = 0; si < slots.length; si++) {
+    var meal = meals[slots[si]];
+    var m = getMult(pid, meal.id);
+    if (isMealEaten(pid, dow, slots[si])) {
+      eatenCal += Math.round(meal.cal*m);
+      eatenPro += Math.round(meal.pro*m);
+    }
+  }
+  var water = getWaterCount(pid, dow);
+  var targetCal = pid === 'J' ? 2200 : 1850;
+  var targetPro = pid === 'J' ? 185 : 130;
+  var hr = new Date().getHours();
+  var greeting = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
+  var name = pid === 'J' ? 'Jordan' : 'Lauren';
+  var wk = null;
+  if (pid === 'J') { for (var wi = 0; wi < J_WORKOUTS.length; wi++) { if (J_WORKOUTS[wi].dow === dow) { wk = J_WORKOUTS[wi]; break; } } }
+  var wDone = pid === 'J' ? !!(getState().wkdone_J && getState().wkdone_J[getDateKey(dow)]) : false;
+
+  var html = dayNav();
+  html += '<div class="hero">' +
+    '<div class="hero-greet">Good ' + greeting + ', ' + name + '</div>' +
+    '<div class="hero-title">' + (pid==='J'?getDayLabel(getDayType(dow)):'Flexible Day') + '</div>' +
+    '<div class="hero-sub">' + (pid==='J'?(getDayType(dow)==='work'?'Night shift tonight - gym on your 1-hour break.':getDayType(dow)==='transition'?'Recovery day. Sleep is the priority.':'Off day - best chance at quality sleep.'):'Your schedule is flexible today. Move when it feels right.') + '</div>' +
+    '<div class="stat-row">' +
+    '<div class="stat-box"><div class="stat-val">' + eatenCal + '</div><div class="stat-lbl">Cal eaten</div></div>' +
+    '<div class="stat-box"><div class="stat-val">' + eatenPro + 'g</div><div class="stat-lbl">Protein</div></div>' +
+    '<div class="stat-box"><div class="stat-val">' + (water*16) + 'oz</div><div class="stat-lbl">Water</div></div>' +
+    '</div>' +
+    '<div class="prog-row"><span class="prog-lbl">Protein</span><div class="prog-bg"><div class="prog-bar" style="width:' + Math.min(100,Math.round(eatenPro/targetPro*100)) + '%;background:#e8a23a"></div></div><span class="prog-pct" style="color:#e8a23a">' + Math.round(eatenPro/targetPro*100) + '%</span></div>' +
+    '<div class="prog-row"><span class="prog-lbl">Calories</span><div class="prog-bg"><div class="prog-bar" style="width:' + Math.min(100,Math.round(eatenCal/targetCal*100)) + '%;background:#3ab8a2"></div></div><span class="prog-pct" style="color:#3ab8a2">' + Math.round(eatenCal/targetCal*100) + '%</span></div>' +
+    '<div class="prog-row"><span class="prog-lbl">Water</span><div class="prog-bg"><div class="prog-bar" style="width:' + Math.min(100,Math.round(water/8*100)) + '%;background:#378ADD"></div></div><span class="prog-pct" style="color:#378ADD">' + Math.round(water/8*100) + '%</span></div>' +
+    '</div>';
+
+  html += waterWidget(pid, dow);
+  html += '<div class="sec-lbl">Today\'s meals</div>';
+  for (var si2 = 0; si2 < slots.length; si2++) { html += mealCard(pid, meals[slots[si2]], slots[si2], dow); }
+
+  if (pid === 'J' && wk) {
+    html += '<div class="sec-lbl" style="margin-top:20px">Tonight\'s workout</div>' +
+      '<div class="wk-card' + (wDone?' done':'') + '">' +
+      '<div class="wk-head"><div class="wk-top"><div class="wk-title">' + wk.focus + '</div><div class="wk-badge' + (wDone?' done':'') + '">' + (wDone?'\u2713 Done':wk.day) + '</div></div>' +
+      '<div class="wk-meta"><div class="wk-chip">45 min</div><div class="wk-chip">' + wk.exercises.length + ' exercises</div></div></div>' +
+      '<button class="wk-done-btn ' + (wDone?'completed':'pending') + '" onclick="toggleWorkoutJ(' + dow + ')">' + (wDone?'\u2713 Complete - tap to undo':'Mark workout done') + '</button></div>';
+  }
+
+  if (pid === 'L') {
+    var lWks = getLaurenWorkouts();
+    html += '<div class="sec-lbl" style="margin-top:20px">Workout plan</div>';
+    if (!getLaurenGoals()) {
+      html += '<div class="goal-prompt"><div class="gp-title">Set up Lauren\'s workout plan</div><div class="gp-sub">Answer a few questions to generate a personalized program.</div><button class="btn-sm accent" onclick="openLaurenGoals()">Set up now</button></div>';
+    } else if (!lWks) {
+      html += '<div class="goal-prompt"><div class="gp-title">Generating your plan...</div><div class="gp-sub">This may take a moment.</div></div>';
+    } else if (lWks.length === 0) {
+      html += '<div class="goal-prompt"><div class="gp-title">Plan generation failed</div><div class="gp-sub">Please try setting up goals again.</div><button class="btn-sm accent" onclick="openLaurenGoals()">Try again</button></div>';
+    } else {
+      html += '<div class="goal-prompt" style="background:rgba(58,184,162,.06);border-color:rgba(58,184,162,.2)"><div class="gp-sub">Tap the Workouts tab to see your full program. <button class="btn-sm teal" style="margin-left:8px" onclick="openLaurenGoals()">Update goals</button></div></div>';
+    }
+  }
+  return html;
+}
+
+// ── MEALS TAB ────────────────────────────────────────────────────────────────
+function renderMeals(dow) {
+  var pid = activeProfile;
+  var meals = getDayMeals(pid, dow);
+  var slots = Object.keys(meals);
+  var eatenPro = 0;
+  for (var i = 0; i < slots.length; i++) {
+    var meal = meals[slots[i]];
+    if (isMealEaten(pid, dow, slots[i])) eatenPro += Math.round(meal.pro * getMult(pid, meal.id));
+  }
+  var targetCal = pid === 'J' ? 2200 : 1850;
+  var targetPro = pid === 'J' ? 185 : 130;
+  var html = dayNav();
+  html += '<div class="stat-row" style="margin-bottom:12px">' +
+    '<div class="stat-box"><div class="stat-val" style="font-size:16px">' + targetCal + '</div><div class="stat-lbl">Target cal</div></div>' +
+    '<div class="stat-box"><div class="stat-val" style="font-size:16px">' + targetPro + 'g</div><div class="stat-lbl">Target protein</div></div>' +
+    '<div class="stat-box"><div class="stat-val" style="font-size:16px">' + eatenPro + 'g</div><div class="stat-lbl">Eaten so far</div></div>' +
+    '</div>';
+  html += waterWidget(pid, dow);
+  html += '<div class="sec-lbl">Recommended meals</div>';
+  for (var i2 = 0; i2 < slots.length; i2++) { html += mealCard(pid, meals[slots[i2]], slots[i2], dow); }
+  return html;
+}
+
+// ── WORKOUTS TAB ─────────────────────────────────────────────────────────────
+function renderWorkouts(dow) {
+  var pid = activeProfile;
+  if (pid === 'J') return renderJordanWorkouts(dow);
+  return renderLaurenWorkouts();
+}
+
+function renderJordanWorkouts(dow) {
+  var wk = null;
+  for (var i = 0; i < J_WORKOUTS.length; i++) { if (J_WORKOUTS[i].dow === dow) { wk = J_WORKOUTS[i]; break; } }
+  var wDone = !!(getState().wkdone_J && getState().wkdone_J[getDateKey(dow)]);
+  var html = dayNav();
+  if (!wk) {
+    var type = getDayType(dow);
+    return html + '<div class="rest-card"><div class="hero-title">' + DAYS[dow] + ' - Rest Day</div><div class="hero-sub" style="margin-top:8px">' + (type==='transition'?'Active recovery. Walk and stretch only.':'Off day. 20-30 min walk, stretching.') + '</div></div>' +
+      '<div class="sec-lbl">Daily movement</div><div class="wk-card"><div class="ex-list">' +
+      '<div class="ex-card"><div class="ex-top"><span class="ex-nm">Brisk Walk - 20-30 minutes</span></div><div class="ex-note">Therapeutic for disc herniation. Use stairs when available.</div><div class="ex-safe">Disc-safe: prescribed movement for herniation recovery</div></div>' +
+      '<div class="ex-card"><div class="ex-top"><span class="ex-nm">Stretch - 10 minutes</span></div><div class="ex-note">Cat-cow x10, hip flexor stretch 30s each side, glute stretch, dead bug x5 each side.</div><div class="ex-safe">All safe for bulged disc</div></div>' +
+      '</div></div>';
+  }
+  var wu = '';
+  for (var wi = 0; wi < wk.warmup.length; wi++) { wu += '<div class="wu-item">- ' + wk.warmup[wi] + '</div>'; }
+  var exs = '';
+  for (var ei = 0; ei < wk.exercises.length; ei++) {
+    var ex = wk.exercises[ei];
+    exs += '<div class="ex-card"><div class="ex-top"><span class="ex-nm">' + ex.name + '</span><span class="ex-sets">' + ex.sets + '</span></div>' +
+      '<div class="ex-note">' + ex.note + '</div><div class="ex-safe">' + ex.safe + '</div><div class="ex-rest">Rest: ' + ex.rest + '</div></div>';
+  }
+  return html + '<div class="wk-card' + (wDone?' done':'') + '">' +
+    '<div class="wk-head"><div class="wk-top"><div class="wk-title">' + wk.focus + '</div><div class="wk-badge' + (wDone?' done':'') + '">' + wk.day + '</div></div>' +
+    '<div class="wk-meta"><div class="wk-chip">45 min</div><div class="wk-chip">' + wk.exercises.length + ' exercises</div><div class="wk-chip">Phase 1 - Back safe</div></div></div>' +
+    '<div class="wu-block"><div class="wu-title">Warm-up - 5 minutes</div>' + wu + '</div>' +
+    '<div class="ex-list">' + exs + '</div>' +
+    '<div class="fin-row"><span class="fin-lbl">Finisher: ' + wk.finisher + '</span><span class="fin-val">~45 min total</span></div>' +
+    '<button class="wk-done-btn ' + (wDone?'completed':'pending') + '" onclick="toggleWorkoutJ(' + dow + ')">' + (wDone?'\u2713 Workout complete - tap to undo':'Mark workout done') + '</button>' +
+    '</div>';
+}
+
+function renderLaurenWorkouts() {
+  var goals = getLaurenGoals();
+  var wks = getLaurenWorkouts();
+  var html = '<div style="margin-bottom:12px"></div>';
+
+  if (!goals) {
+    return html + '<div class="goal-prompt"><div class="gp-title">Set up your workout plan</div>' +
+      '<div class="gp-sub">Answer a few questions about your goals and we\'ll generate a personalized program for you.</div>' +
+      '<button class="btn-sm accent" style="margin-top:12px;width:100%;padding:10px" onclick="openLaurenGoals()">Get started</button></div>';
+  }
+  if (!wks) {
+    return html + '<div class="goal-prompt"><div class="gp-title">Generating your plan...</div><div class="gp-sub">This usually takes 10-20 seconds.</div></div>';
+  }
+  if (wks.length === 0) {
+    return html + '<div class="goal-prompt"><div class="gp-title">Could not generate plan</div>' +
+      '<div class="gp-sub">Something went wrong. Please try updating your goals.</div>' +
+      '<button class="btn-sm accent" style="margin-top:12px" onclick="openLaurenGoals()">Update goals</button></div>';
+  }
+
+  html += '<div class="goal-prompt" style="background:rgba(58,184,162,.06);border-color:rgba(58,184,162,.2);margin-bottom:14px">' +
+    '<div class="gp-title" style="color:#3ab8a2">Your personalized plan</div>' +
+    '<div class="gp-sub">Goal: ' + goals.primaryGoal + ' - ' + goals.daysPerWeek + ' days/week - Schedule is flexible</div>' +
+    '<button class="btn-sm teal" style="margin-top:8px" onclick="openLaurenGoals()">Update goals</button></div>';
+
+  for (var i = 0; i < wks.length; i++) {
+    var wk = wks[i];
+    var done = isWorkoutDone('L', wk.session || i);
+    var wu2 = '';
+    if (wk.warmup) { for (var wi2 = 0; wi2 < wk.warmup.length; wi2++) { wu2 += '<div class="wu-item">- ' + wk.warmup[wi2] + '</div>'; } }
+    var exs2 = '';
+    if (wk.exercises) {
+      for (var ei2 = 0; ei2 < wk.exercises.length; ei2++) {
+        var ex2 = wk.exercises[ei2];
+        exs2 += '<div class="ex-card"><div class="ex-top"><span class="ex-nm">' + ex2.name + '</span><span class="ex-sets">' + (ex2.sets||'') + '</span></div>' +
+          (ex2.note?'<div class="ex-note">' + ex2.note + '</div>':'') +
+          (ex2.safe?'<div class="ex-safe">' + ex2.safe + '</div>':'') +
+          (ex2.rest?'<div class="ex-rest">Rest: ' + ex2.rest + '</div>':'') + '</div>';
+      }
+    }
+    var sidx = wk.session || i;
+    html += '<div class="wk-card' + (done?' done':'') + '">' +
+      '<div class="wk-head"><div class="wk-top"><div class="wk-title">Session ' + (wk.session||i+1) + ': ' + (wk.focus||'') + '</div><div class="wk-badge' + (done?' done':'') + '">' + (done?'\u2713 Done':'Flexible') + '</div></div>' +
+      '<div class="wk-meta"><div class="wk-chip">40-50 min</div><div class="wk-chip">' + (wk.exercises?wk.exercises.length:0) + ' exercises</div></div></div>' +
+      (wu2?'<div class="wu-block"><div class="wu-title">Warm-up</div>' + wu2 + '</div>':'') +
+      '<div class="ex-list">' + exs2 + '</div>' +
+      (wk.finisher?'<div class="fin-row"><span class="fin-lbl">Finisher: ' + wk.finisher + '</span></div>':'') +
+      '<button class="wk-done-btn ' + (done?'completed':'pending') + '" onclick="toggleWorkoutL(' + sidx + ')">' + (done?'\u2713 Session complete - tap to undo':'Mark session done') + '</button>' +
+      '</div>';
+  }
+  return html;
+}
+
+// ── SHOPPING TAB ─────────────────────────────────────────────────────────────
+function renderShopping() {
+  var s = getState();
+  var wk = getWeekKey(shopWeekOffset);
+  var checked = (s.shop && s.shop[wk]) || {};
+  var expanded = s.shopExp || {};
+  var wkDate = new Date(wk);
+  var wkEnd = new Date(wkDate); wkEnd.setDate(wkEnd.getDate() + 6);
+  function fmtD(d) { return d.toLocaleDateString('en-US', {month:'short',day:'numeric'}); }
+  var wkLabel = 'Week of ' + fmtD(wkDate) + ' - ' + fmtD(wkEnd);
+  var totalItems = 0, checkedCount = 0;
+  for (var si = 0; si < SHOP_SECTIONS.length; si++) {
+    totalItems += SHOP_SECTIONS[si].items.length;
+    for (var ii = 0; ii < SHOP_SECTIONS[si].items.length; ii++) {
+      if (checked[SHOP_SECTIONS[si].items[ii].id]) checkedCount++;
+    }
+  }
+  var html = '<div class="shop-week-nav">' +
+    '<button class="shop-nav-btn" onclick="changeShopWeek(-1)">\u2190 Prev</button>' +
+    '<div><div class="shop-week-lbl">' + wkLabel + '</div>' +
+    '<div style="font-size:11px;color:#5f5e6e;margin-top:2px">' + (shopWeekOffset===0?'Upcoming week':shopWeekOffset<0?'Past week':'Future week') + '</div></div>' +
+    '<button class="shop-nav-btn" onclick="changeShopWeek(1)">Next \u2192</button>' +
+    '</div>';
+  html += '<div class="shop-prog">' +
+    '<span style="font-size:12px;color:#9998a8">' + checkedCount + ' / ' + totalItems + ' items</span>' +
+    '<div style="flex:1;margin:0 8px"><div class="prog-bg"><div class="prog-bar" style="width:' + Math.round(checkedCount/totalItems*100) + '%;background:#3ab8a2"></div></div></div>' +
+    '<span style="font-size:12px;color:#3ab8a2;font-weight:600">' + Math.round(checkedCount/totalItems*100) + '%</span>' +
+    '</div>';
+  html += '<div style="display:flex;gap:6px;margin-bottom:12px;font-size:11px">' +
+    '<span style="background:rgba(232,162,58,.15);color:#e8a23a;padding:3px 8px;border-radius:10px;font-weight:600">J = Jordan</span>' +
+    '<span style="background:rgba(232,100,160,.15);color:#e864a0;padding:3px 8px;border-radius:10px;font-weight:600">L = Lauren</span>' +
+    '<span style="background:rgba(58,184,162,.15);color:#3ab8a2;padding:3px 8px;border-radius:10px;font-weight:600">B = Both</span>' +
+    '</div>';
+  for (var si2 = 0; si2 < SHOP_SECTIONS.length; si2++) {
+    var sec = SHOP_SECTIONS[si2];
+    var secChecked = 0;
+    for (var ii2 = 0; ii2 < sec.items.length; ii2++) { if (checked[sec.items[ii2].id]) secChecked++; }
+    var isOpen = expanded[sec.id] !== false;
+    html += '<div class="shop-sec">' +
+      '<div class="shop-sec-hdr" onclick="toggleShopSection(\'' + sec.id + '\')">' +
+      '<span class="shop-sec-title">' + sec.label + '</span>' +
+      '<span class="shop-count">' + secChecked + '/' + sec.items.length + ' ' + (isOpen?'\u25B2':'\u25BC') + '</span>' +
+      '</div>';
+    if (isOpen) {
+      html += '<div class="shop-items-list">';
+      for (var ii3 = 0; ii3 < sec.items.length; ii3++) {
+        var item = sec.items[ii3];
+        var isChecked = !!checked[item.id];
+        var whoColor = item.who==='J'?'#e8a23a':item.who==='L'?'#e864a0':'#3ab8a2';
+        html += '<div class="shop-item" onclick="toggleShopItem(\'' + item.id + '\',\'' + wk + '\')">' +
+          '<div class="shop-cb' + (isChecked?' checked':'') + '">' + (isChecked?'<span style="color:#000;font-size:11px;font-weight:700">\u2713</span>':'') + '</div>' +
+          '<div style="flex:1">' +
+          '<div class="shop-item-name' + (isChecked?' checked':'') + '">' + item.name + '</div>' +
+          (item.note?'<div class="shop-note">' + item.note + '</div>':'') +
+          '</div>' +
+          '<span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;background:' + whoColor + '22;color:' + whoColor + ';margin-right:6px">' + item.who + '</span>' +
+          '<div class="shop-amt' + (isChecked?' checked':'') + '">' + item.amt + '</div>' +
+          '</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  html += '<button class="shop-reset" onclick="resetShop(\'' + wk + '\')">Reset all checkboxes for this week</button>';
+  return html;
+}
+
+// ── LABS TAB ─────────────────────────────────────────────────────────────────
+function renderLabs() {
+  var pid = activeProfile;
+  var s = getState();
+  var labs = s['labs_' + pid] || null;
+  var analyzing = s['labsAnalyzing_' + pid] || false;
+  var name = pid === 'J' ? 'Jordan' : 'Lauren';
+  var inputId = 'pdfInput_' + pid;
+  var html = '<div class="upload-zone" onclick="document.getElementById(\'' + inputId + '\').click()">' +
+    '<div style="font-size:32px;margin-bottom:8px">\uD83D\uDCC4</div>' +
+    '<div style="font-size:14px;font-weight:500;color:#f0eff4;margin-bottom:4px">Upload ' + name + '\'s blood panel PDF</div>' +
+    '<div style="font-size:12px;color:#9998a8">Tap to select - app will read results and provide personalized insights</div>' +
+    '</div>';
+  if (analyzing) {
+    html += '<div class="analyzing">\u25CF Analyzing ' + name + '\'s lab results...</div>';
+  }
+  if (labs) {
+    html += '<div class="labs-card"><div class="labs-title">Lab Results - ' + name + '</div><div class="labs-date">' + labs.date + '</div>';
+    for (var i = 0; i < labs.values.length; i++) {
+      var v = labs.values[i];
+      var vColor = v.status==='good'?'#3ab8a2':v.status==='warn'?'#e8a23a':'#e84848';
+      html += '<div class="lab-row"><div><div class="lab-name">' + v.name + '</div><div class="lab-range">Range: ' + v.range + '</div></div><div class="lab-val" style="color:' + vColor + '">' + v.value + '</div></div>';
+    }
+    html += '</div>';
+    if (labs.insights && labs.insights.length) {
+      html += '<div class="sec-lbl">Personalized insights</div>';
+      for (var j = 0; j < labs.insights.length; j++) {
+        html += '<div class="insight-card"><div class="insight-title">' + labs.insights[j].title + '</div><div class="insight-text">' + labs.insights[j].text + '</div></div>';
+      }
+    }
+  } else if (pid === 'J') {
+    html += '<div class="labs-card"><div class="labs-title">Baseline Labs - Jordan (April 2026)</div><div class="labs-date">Ordered by Stephen Toth PA - 04/14/2026</div>' +
+      '<div class="lab-row"><div><div class="lab-name">Triglycerides</div><div class="lab-range">Normal: 0-149 mg/dL</div></div><div class="lab-val" style="color:#e84848">317</div></div>' +
+      '<div class="lab-row"><div><div class="lab-name">HDL Cholesterol</div><div class="lab-range">Normal: &gt;39 mg/dL</div></div><div class="lab-val" style="color:#e84848">33</div></div>' +
+      '<div class="lab-row"><div><div class="lab-name">LDL Cholesterol</div><div class="lab-range">Optimal: &lt;100 mg/dL</div></div><div class="lab-val" style="color:#e8a23a">104</div></div>' +
+      '<div class="lab-row"><div><div class="lab-name">Total Cholesterol</div><div class="lab-range">Normal: 100-199 mg/dL</div></div><div class="lab-val" style="color:#3ab8a2">188</div></div>' +
+      '<div class="lab-row"><div><div class="lab-name">Glucose</div><div class="lab-range">Normal: 70-99 mg/dL</div></div><div class="lab-val" style="color:#e8a23a">98</div></div>' +
+      '<div class="lab-row"><div><div class="lab-name">ALT liver</div><div class="lab-range">Normal: 0-44 IU/L</div></div><div class="lab-val" style="color:#e8a23a">55</div></div>' +
+      '<div class="lab-row"><div><div class="lab-name">Vitamin D</div><div class="lab-range">Normal: 30-100 ng/mL</div></div><div class="lab-val" style="color:#e8a23a">25.9</div></div>' +
+      '<div class="lab-row"><div><div class="lab-name">Hemoglobin</div><div class="lab-range">Normal: 13.0-17.7 g/dL</div></div><div class="lab-val" style="color:#3ab8a2">15.8</div></div>' +
+      '</div>';
+  } else {
+    html += '<div class="labs-card"><div class="labs-title">No labs yet - Lauren</div><div class="labs-date">Upload a blood panel PDF above to get personalized insights.</div></div>';
+  }
+  return html;
+}
+
+// ── DRAWERS ──────────────────────────────────────────────────────────────────
+function openSwap(pid, slot, dow) {
+  var current = getMeal(pid, dow, slot);
+  var custom = getCustomMeals(pid);
+  var pool = getAllMeals(pid).concat(custom).filter(function(m) { return m.id !== current.id; }).sort(function() { return Math.random() - 0.5; }).slice(0, 6);
+  var label = {breakfast:'Breakfast',lunch:'Lunch',dinner:'Dinner',snack:'Snack'}[slot];
+  var html = '<div class="drawer-title">Swap ' + label + '</div>' +
+    '<div class="drawer-sub">Choose a replacement or add a custom meal</div>' +
+    '<div class="swap-item" onclick="openCustomMeal(\'' + pid + '\',\'' + slot + '\',' + dow + ')" style="background:rgba(232,162,58,.06)">' +
+    '<div class="swap-em-box" style="background:rgba(232,162,58,.15)">+</div>' +
+    '<div class="swap-info"><div class="swap-name">Add custom meal</div><div class="swap-macros">Type in or pull from a URL</div></div>' +
+    '</div>';
+  for (var i = 0; i < pool.length; i++) {
+    var m = pool[i];
+    html += '<div class="swap-item"><div class="swap-em-box">' + m.emoji + '</div>' +
+      '<div class="swap-info"><div class="swap-name">' + m.name + '</div><div class="swap-macros">' + m.cal + ' cal - ' + m.pro + 'g protein</div></div>' +
+      '<button class="use-btn" onclick="doSwap(\'' + pid + '\',\'' + slot + '\',' + dow + ',\'' + m.id + '\')">Use this</button></div>';
+  }
+  showDrawer(html);
+}
+
+function openCustomMeal(pid, slot, dow) {
+  var html = '<div class="drawer-title">Custom Meal</div>' +
+    '<div class="drawer-sub">Paste a URL to auto-fill, or enter manually</div>' +
+    '<div style="padding:0 18px 20px">' +
+    '<div style="display:flex;gap:8px;margin-bottom:14px">' +
+    '<input id="cm_url" type="url" placeholder="Paste URL (recipe, restaurant, MyFitnessPal...)" style="flex:1;padding:9px 12px;border-radius:8px;border:1px solid #2c2c35;background:#23232a;color:#f0eff4;font-size:13px">' +
+    '<button id="cm_fetch_btn" onclick="fetchUrlNutrition(\'' + pid + '\')" style="padding:9px 12px;border-radius:8px;background:rgba(232,162,58,.15);border:1px solid rgba(232,162,58,.3);color:#e8a23a;font-size:12px;cursor:pointer;white-space:nowrap">Fetch nutrition</button>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">' +
+    fieldInput('cm_name','Meal name','text','',true) +
+    fieldInput('cm_cal','Calories','number','') +
+    fieldInput('cm_pro','Protein (g)','number','') +
+    fieldInput('cm_carb','Carbs (g)','number','') +
+    fieldInput('cm_fat','Fat (g)','number','') +
+    fieldInput('cm_fib','Fiber (g)','number','') +
+    '</div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button onclick="closeDrawer()" style="flex:1;padding:10px;border-radius:8px;background:#23232a;border:1px solid #2c2c35;color:#9998a8;font-size:13px;cursor:pointer">Cancel</button>' +
+    '<button onclick="saveAndSwapCustom(\'' + pid + '\',\'' + slot + '\',' + dow + ')" style="flex:1;padding:10px;border-radius:8px;background:rgba(232,162,58,.15);border:1px solid rgba(232,162,58,.3);color:#e8a23a;font-size:13px;font-weight:600;cursor:pointer">Save and use</button>' +
+    '</div></div>';
+  showDrawer(html);
+}
+
+function fieldInput(id, label, type, placeholder, fullWidth) {
+  var style = fullWidth ? 'grid-column:1/-1' : '';
+  return '<div style="' + style + '"><label style="font-size:11px;color:#9998a8;display:block;margin-bottom:4px">' + label + '</label>' +
+    '<input id="' + id + '" type="' + type + '" placeholder="' + placeholder + '" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #2c2c35;background:#23232a;color:#f0eff4;font-size:13px"></div>';
+}
+
+function saveAndSwapCustom(pid, slot, dow) {
+  var name = document.getElementById('cm_name').value.trim();
+  if (!name) { alert('Please enter a meal name.'); return; }
+  var meal = {
+    id: 'custom_' + Date.now(),
+    emoji: '🍽',
+    name: name,
+    cal: parseInt(document.getElementById('cm_cal').value)||0,
+    pro: parseInt(document.getElementById('cm_pro').value)||0,
+    carb: parseInt(document.getElementById('cm_carb').value)||0,
+    fat: parseInt(document.getElementById('cm_fat').value)||0,
+    fib: parseInt(document.getElementById('cm_fib').value)||0,
+    portions: [{i:'🍽',n:'Full serving',g:'1 serving',v:'As prepared'}],
+    recipe: {ings:[], steps:['Custom meal.'], batch:'', link:''}
+  };
+  setState(function(s) {
+    var key = 'custom_' + pid;
+    if (!s[key]) s[key] = [];
+    s[key].push(meal);
+    var swapKey = 'swaps_' + pid;
+    if (!s[swapKey]) s[swapKey] = {};
+    var dk = getDateKey(dow);
+    if (!s[swapKey][dk]) s[swapKey][dk] = {};
+    s[swapKey][dk][slot] = meal;
+  });
+  closeDrawer();
+  setTimeout(render, 320);
+}
+
+function openRecipe(pid, mealId) {
+  var meal = getAllMeals(pid).concat(getCustomMeals(pid)).filter(function(m) { return m.id === mealId; })[0];
+  if (!meal) return;
+  var r = meal.recipe;
+  var ings = '';
+  if (r.ings) { for (var i = 0; i < r.ings.length; i++) { ings += '<div class="ing-row"><span class="ing-nm">' + r.ings[i][0] + '</span><span class="ing-amt">' + r.ings[i][1] + '</span></div>'; } }
+  var steps = '';
+  if (r.steps) { for (var j = 0; j < r.steps.length; j++) { steps += '<div class="step-row"><div class="step-num">' + (j+1) + '</div><div>' + r.steps[j] + '</div></div>'; } }
+  var html = '<div class="drawer-title">' + meal.name + '</div><div class="recipe-body">' +
+    (ings?'<div class="rec-sec">Ingredients</div>' + ings:'') +
+    (steps?'<div class="rec-sec">Instructions</div>' + steps:'') +
+    (r.batch?'<div class="batch-tip">Batch tip: ' + r.batch + '</div>':'') +
+    (r.link?'<a class="rec-link" href="' + r.link + '" target="_blank"><span>Full recipe with photos</span><span>\u2192</span></a>':'') +
+    '</div>';
+  showDrawer(html);
+}
+
+function openLaurenGoals() {
+  var goals = getLaurenGoals() || {};
+  var html = '<div class="drawer-title">Lauren\'s Goals</div>' +
+    '<div class="drawer-sub">Answer these questions to generate your personalized plan</div>' +
+    '<div style="padding:0 18px 30px;display:flex;flex-direction:column;gap:14px">' +
+
+    selectField('lg_primary','Primary goal',['Lose fat','Build strength','Improve fitness','Postpartum recovery','Recomposition - lose fat and build muscle'],goals.primaryGoal) +
+    selectField('lg_activity','Current activity level',['Sedentary - mostly sitting','Lightly active - some walking','Moderately active - exercise a few times a week','Very active - exercise most days'],goals.activityLevel) +
+    selectField('lg_days','Workout days per week',['2','3','4','5'],goals.daysPerWeek) +
+    selectField('lg_postpartum','Postpartum status',['Not postpartum','Yes - less than 6 months postpartum','Yes - 6 to 12 months postpartum','Yes - over 12 months postpartum'],goals.isPostpartum) +
+
+    '<div><label style="font-size:11px;color:#9998a8;display:block;margin-bottom:4px">If postpartum - any PT clearance, diastasis recti diagnosis, or symptoms? (optional)</label>' +
+    '<textarea id="lg_ppdetail" rows="2" placeholder="e.g. cleared by PT, 2cm diastasis diagnosed, no symptoms..." style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #2c2c35;background:#23232a;color:#f0eff4;font-size:13px;resize:none">' + (goals.postpartumDetail||'') + '</textarea></div>' +
+
+    selectField('lg_cardio','Cardio preference',['Walking','Cycling','Swimming','Group fitness classes','Low impact only','No cardio preference'],goals.cardioPreference) +
+
+    '<div><label style="font-size:11px;color:#9998a8;display:block;margin-bottom:4px">Any injuries, pain, or areas to avoid?</label>' +
+    '<input id="lg_injuries" type="text" placeholder="e.g. bad knee, shoulder pain, lower back..." value="' + (goals.injuries||'') + '" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #2c2c35;background:#23232a;color:#f0eff4;font-size:13px"></div>' +
+
+    '<div><label style="font-size:11px;color:#9998a8;display:block;margin-bottom:4px">Anything else the plan should know?</label>' +
+    '<textarea id="lg_notes" rows="2" placeholder="Any other goals, preferences, or context..." style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #2c2c35;background:#23232a;color:#f0eff4;font-size:13px;resize:none">' + (goals.otherNotes||'') + '</textarea></div>' +
+
+    '<div style="display:flex;gap:8px;margin-top:4px">' +
+    '<button onclick="closeDrawer()" style="flex:1;padding:11px;border-radius:8px;background:#23232a;border:1px solid #2c2c35;color:#9998a8;font-size:13px;cursor:pointer">Cancel</button>' +
+    '<button onclick="saveLaurenGoals()" style="flex:1;padding:11px;border-radius:8px;background:rgba(232,100,160,.15);border:1px solid rgba(232,100,160,.3);color:#e864a0;font-size:13px;font-weight:600;cursor:pointer">Generate my plan</button>' +
+    '</div></div>';
+  showDrawer(html);
+}
+
+function selectField(id, label, options, current) {
+  var opts = '';
+  for (var i = 0; i < options.length; i++) {
+    opts += '<option value="' + options[i] + '"' + (current===options[i]?' selected':'') + '>' + options[i] + '</option>';
+  }
+  return '<div><label style="font-size:11px;color:#9998a8;display:block;margin-bottom:4px">' + label + '</label>' +
+    '<select id="' + id + '" style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #2c2c35;background:#23232a;color:#f0eff4;font-size:13px">' + opts + '</select></div>';
+}
+
+// ── MAIN RENDER ───────────────────────────────────────────────────────────────
+function render() {
+  renderHeader();
+  var tabMap = { today: renderToday, meals: renderMeals, workouts: renderWorkouts, shopping: renderShopping, labs: renderLabs };
+  var fn = tabMap[currentTab];
+  document.getElementById('content').innerHTML = fn ? fn(currentDow) : '';
+}
+
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+(function() {
+  var d = new Date(today);
+  document.getElementById('hDay').textContent = DAYS[todayDow] + ' - Today';
+  document.getElementById('hDate').textContent = d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('hBadge').textContent = getDayLabel(getDayType(todayDow));
+  document.getElementById('hBadge').className = 'day-badge ' + (getDayType(todayDow)==='work'?'badge-work':getDayType(todayDow)==='transition'?'badge-trans':'badge-off');
+  render();
+})();
+</script>
+</body>
+</html>
